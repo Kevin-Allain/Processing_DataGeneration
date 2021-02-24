@@ -407,13 +407,12 @@ void setup() {
       
       // Too many combinations. Let's reduce to Qn and Ql with the same difficulty but with different noise previously established (consider change...)
       // EE;EM;ME;MM;EH;HE;MH;HM; HH for exceptional case
+      // Changes for the possibility to vary with repetition of difficulties in mods. We order the attributes in three groups [gpsOn,EngineTemperature|carPhoneUsed,fuelConsumption|wiperOn,suspensionSpringForce] 
       if (modId == 0) { 
-        noiseFuelConsumption = noiseFuelConsumption_E; 
-        noiseTemperature = noiseTemperature_E; 
-        noiseSuspensionSpringForce = noiseSuspensionSpringForce_E; 
-        actualCountForEnd_GPS = countEnd_E; 
-        actualCountForEnd_Wiper = countEnd_E; 
-        actualCountForEnd_Phone = countEnd_E; 
+        actualCountForEnd_GPS = countEnd_E; noiseTemperature = noiseTemperature_E;        
+        actualCountForEnd_Phone = countEnd_M; noiseFuelConsumption = noiseFuelConsumption_M; 
+        actualCountForEnd_Wiper = countEnd_H; noiseSuspensionSpringForce = noiseSuspensionSpringForce_H;
+         
         if (quantGPS_E>5) { qualGPS=1; };
         if (quantWiper_E>5) { qualWiper=1;  };
         if (quantPhone_E>5) { qualPhone=1; };
@@ -421,14 +420,12 @@ void setup() {
         noiseComputerElectricityConsumption = noiseComputerElectricityConsumption_E;
         actualCountForEnd_HeatingSeatsOn = countEnd_E;
         if (quantHeatingSeatsOn_E>5){ qualHeatingSeatsOn=1;}
-      } //EE
+      } //EE // ee,mm,hh
       else if (modId == 1) { 
-        noiseFuelConsumption = noiseFuelConsumption_E; 
-        noiseTemperature = noiseTemperature_E; 
-        noiseSuspensionSpringForce = noiseSuspensionSpringForce_E; 
-        actualCountForEnd_GPS = countEnd_M; 
-        actualCountForEnd_Wiper = countEnd_M; 
-        actualCountForEnd_Phone = countEnd_M; 
+        actualCountForEnd_GPS = countEnd_M; noiseTemperature = noiseTemperature_M;
+        actualCountForEnd_Phone = countEnd_E; noiseFuelConsumption = noiseFuelConsumption_E; 
+        actualCountForEnd_Wiper = countEnd_H; noiseSuspensionSpringForce = noiseSuspensionSpringForce_H;
+        
         if (quantGPS_M>5) { qualGPS=1; };
         if (quantWiper_M>5) { qualWiper=1; };
         if (quantPhone_M>5) { qualPhone=1; };
@@ -436,14 +433,12 @@ void setup() {
         noiseComputerElectricityConsumption = noiseComputerElectricityConsumption_M;
         actualCountForEnd_HeatingSeatsOn = countEnd_M;
         if (quantHeatingSeatsOn_M>5){ qualHeatingSeatsOn=1;}
-      } // EM
+      } // EM // mm,ee,hh
       else if (modId == 2) { 
-        noiseFuelConsumption = noiseFuelConsumption_M; 
-        noiseTemperature = noiseTemperature_M; 
-        noiseSuspensionSpringForce = noiseSuspensionSpringForce_M; 
-        actualCountForEnd_GPS = countEnd_E; 
-        actualCountForEnd_Wiper = countEnd_E; 
-        actualCountForEnd_Phone = countEnd_E; 
+        actualCountForEnd_GPS = countEnd_E; noiseTemperature = noiseTemperature_E;        
+        actualCountForEnd_Phone = countEnd_H; noiseFuelConsumption = noiseFuelConsumption_H;
+        actualCountForEnd_Wiper = countEnd_M; noiseSuspensionSpringForce = noiseSuspensionSpringForce_M;
+        
         if (quantGPS_E>5) { qualGPS=1; };
         if (quantWiper_E>5) { qualWiper=1; };
         if (quantPhone_E>5) { qualPhone=1; };
@@ -451,14 +446,12 @@ void setup() {
         noiseComputerElectricityConsumption = noiseComputerElectricityConsumption_E;
         actualCountForEnd_HeatingSeatsOn = countEnd_E;
         if (quantHeatingSeatsOn_E>5){ qualHeatingSeatsOn=1;}
-      } // ME
+      } // ME // ee,hh,mm
       else if (modId == 3) { 
-        noiseFuelConsumption = noiseFuelConsumption_M; 
-        noiseTemperature = noiseTemperature_M; 
-        noiseSuspensionSpringForce = noiseSuspensionSpringForce_M; 
-        actualCountForEnd_GPS = countEnd_M; 
-        actualCountForEnd_Wiper = countEnd_M; 
-        actualCountForEnd_Phone = countEnd_M; 
+        actualCountForEnd_GPS = countEnd_H; noiseTemperature = noiseTemperature_H;
+        actualCountForEnd_Phone = countEnd_M; noiseFuelConsumption = noiseFuelConsumption_M;
+        actualCountForEnd_Wiper = countEnd_E; noiseSuspensionSpringForce = noiseSuspensionSpringForce_E;
+        
         if (quantGPS_M>5) { qualGPS=1; };
         if (quantWiper_M>5) { qualWiper=1; };
         if (quantPhone_M>5) { qualPhone=1; };
@@ -466,14 +459,12 @@ void setup() {
         noiseComputerElectricityConsumption = noiseComputerElectricityConsumption_M;
         actualCountForEnd_HeatingSeatsOn = countEnd_M;
         if (quantHeatingSeatsOn_M>5){ qualHeatingSeatsOn=1;}
-      } // MM
+      } // MM // hh,mm,ee
       else if (modId == 4) { 
-        noiseFuelConsumption = noiseFuelConsumption_E; 
-        noiseTemperature = noiseTemperature_E; 
-        noiseSuspensionSpringForce = noiseSuspensionSpringForce_E; 
-        actualCountForEnd_GPS = countEnd_H; 
-        actualCountForEnd_Wiper = countEnd_H; 
-        actualCountForEnd_Phone = countEnd_H; 
+        actualCountForEnd_GPS = countEnd_H; noiseTemperature = noiseTemperature_H;
+        actualCountForEnd_Phone = countEnd_E; noiseFuelConsumption = noiseFuelConsumption_E; 
+        actualCountForEnd_Wiper = countEnd_M; noiseSuspensionSpringForce = noiseSuspensionSpringForce_M;
+        
         if (quantGPS_H>5) { qualGPS=1; };
         if (quantWiper_H>5) { qualWiper=1; };
         if (quantPhone_H>5) { qualPhone=1; };
@@ -481,14 +472,12 @@ void setup() {
         noiseComputerElectricityConsumption = noiseComputerElectricityConsumption_H;
         actualCountForEnd_HeatingSeatsOn = countEnd_H;
         if (quantHeatingSeatsOn_H>5){ qualHeatingSeatsOn=1;}
-      } // EH
+      } // EH // hh,ee,mm
       else if (modId == 5) { 
-        noiseFuelConsumption = noiseFuelConsumption_H; 
-        noiseTemperature = noiseTemperature_H; 
-        noiseSuspensionSpringForce = noiseSuspensionSpringForce_H; 
-        actualCountForEnd_GPS = countEnd_E; 
-        actualCountForEnd_Wiper = countEnd_E; 
-        actualCountForEnd_Phone = countEnd_E; 
+        actualCountForEnd_GPS = countEnd_M; noiseTemperature = noiseTemperature_M;
+        actualCountForEnd_Phone = countEnd_H; noiseFuelConsumption = noiseFuelConsumption_H; 
+        actualCountForEnd_Wiper = countEnd_E; noiseSuspensionSpringForce = noiseSuspensionSpringForce_E;
+        
         if (quantGPS_E>5) { qualGPS=1; };
         if (quantWiper_E>5) { qualWiper=1; };
         if (quantPhone_E>5) { qualPhone=1; };
@@ -496,14 +485,12 @@ void setup() {
         noiseComputerElectricityConsumption = noiseComputerElectricityConsumption_E;
         actualCountForEnd_HeatingSeatsOn = countEnd_E;
         if (quantHeatingSeatsOn_E>5){ qualHeatingSeatsOn=1;}
-      } // HE
+      } // HE // mm,hh,ee
       else if (modId == 6) { 
-        noiseFuelConsumption = noiseFuelConsumption_M; 
-        noiseTemperature = noiseTemperature_M; 
-        noiseSuspensionSpringForce = noiseSuspensionSpringForce_M; 
-        actualCountForEnd_GPS = countEnd_H; 
-        actualCountForEnd_Wiper = countEnd_H; 
-        actualCountForEnd_Phone = countEnd_H; 
+        actualCountForEnd_GPS = countEnd_E; noiseTemperature = noiseTemperature_E;
+        actualCountForEnd_Phone = countEnd_M; noiseFuelConsumption = noiseFuelConsumption_M;
+        actualCountForEnd_Wiper = countEnd_H; noiseSuspensionSpringForce = noiseSuspensionSpringForce_H;
+        
         if (quantGPS_H>5) { qualGPS=1; };
         if (quantWiper_H>5) { qualWiper=1; };
         if (quantPhone_H>5) { qualPhone=1; };
@@ -511,14 +498,12 @@ void setup() {
         noiseComputerElectricityConsumption = noiseComputerElectricityConsumption_H;
         actualCountForEnd_HeatingSeatsOn = countEnd_H;
         if (quantHeatingSeatsOn_H>5){ qualHeatingSeatsOn=1;}
-      } // MH
+      } // MH // ee, mm, hh
       else if (modId == 7) { 
-        noiseFuelConsumption = noiseFuelConsumption_H; 
-        noiseTemperature = noiseTemperature_H; 
-        noiseSuspensionSpringForce = noiseSuspensionSpringForce_H; 
-        actualCountForEnd_GPS = countEnd_M; 
-        actualCountForEnd_Wiper = countEnd_M; 
-        actualCountForEnd_Phone = countEnd_M; 
+        actualCountForEnd_GPS = countEnd_M; noiseTemperature = noiseTemperature_M;        
+        actualCountForEnd_Phone = countEnd_E; noiseFuelConsumption = noiseFuelConsumption_E; 
+        actualCountForEnd_Wiper = countEnd_H; noiseSuspensionSpringForce = noiseSuspensionSpringForce_H;
+        
         if (quantGPS_M>5) { qualGPS=1; };
         if (quantWiper_M>5) { qualWiper=1; };
         if (quantPhone_M>5) { qualPhone=1; };
@@ -526,14 +511,12 @@ void setup() {
         noiseComputerElectricityConsumption = noiseComputerElectricityConsumption_M;
         actualCountForEnd_HeatingSeatsOn = countEnd_M; 
         if (quantHeatingSeatsOn_M>5){ qualHeatingSeatsOn=1;}
-      } // HM
+      } // HM // mm,ee,hh
       else if (id == 17 || id == 23) {
-        noiseFuelConsumption = noiseFuelConsumption_H; 
-        noiseTemperature = noiseTemperature_H; 
-        noiseSuspensionSpringForce = noiseSuspensionSpringForce_H; 
-        actualCountForEnd_GPS = countEnd_H; 
-        actualCountForEnd_Wiper = countEnd_H; 
-        actualCountForEnd_Phone = countEnd_H; 
+        actualCountForEnd_GPS = countEnd_M; noiseTemperature = noiseTemperature_M;
+        actualCountForEnd_Phone = countEnd_H; noiseFuelConsumption = noiseFuelConsumption_H; 
+        actualCountForEnd_Wiper = countEnd_E; noiseSuspensionSpringForce = noiseSuspensionSpringForce_E;
+        
         if (quantGPS_H>5) { qualGPS=1; };
         if (quantWiper_H>5) { qualWiper=1; };
         if (quantPhone_H>5) { qualPhone=1; };
@@ -541,7 +524,7 @@ void setup() {
         noiseComputerElectricityConsumption = noiseComputerElectricityConsumption_H;
         actualCountForEnd_HeatingSeatsOn = countEnd_H; 
         if (quantHeatingSeatsOn_H>5){ qualHeatingSeatsOn=1;}
-      } // HH
+      } // HH // mm,hh,ee
 
       // reading this again, I wonder why we do it this way.
       if (countRow==0) {

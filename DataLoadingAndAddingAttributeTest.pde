@@ -14,38 +14,36 @@ import org.gicentre.utils.spatial.Ellipsoid;
 //import org.joda.time.format.DateTimeFormatter;
 
 float noiseScale0 = 0.01; // 0.02 Pretty smooth; 0.1 medium messy; 0.9 mess af // Keep a structure with noise((i++)*noiseScale,noiseScale)
-// todo make everything easier. By a lot. Old values: 0.02; 0.1; 0.3. Let's try 0.01; 0.05 and 0.1
-float noiseScaleE1 = 0.01;
-float noiseScaleM1 = 0.05;
-float noiseScaleH1 = 0.1; 
-float noiseScaleE2 = 0.009;
+// By a lot. Old values: 0.02; 0.1; 0.3. Let's try 0.01; 0.05 and 0.1
+// 2021 May 12 => Ease more? Let's try 0.0090; 0.048 and 0.088
+float noiseScaleE1 = 0.0090;
+float noiseScaleE2 = 0.0089;
+float noiseScaleE3 = 0.0091;
+float noiseScaleE4 = 0.0088;
+float noiseScaleE5 = 0.0092;
+float noiseScaleE6 = 0.0087;
+float noiseScaleE7 = 0.0093;
+float noiseScaleE8 = 0.00915;
+float noiseScaleM1 = 0.048;
 float noiseScaleM2 = 0.049;
-float noiseScaleH2 = 0.09; 
-float noiseScaleE3 = 0.011;
-float noiseScaleM3 = 0.051;
-float noiseScaleH3 = 0.11;
+float noiseScaleM3 = 0.047;
+float noiseScaleM4 = 0.050;
+float noiseScaleM5 = 0.046;
+float noiseScaleM6 = 0.051;
+float noiseScaleM7 = 0.045;
+float noiseScaleM8 = 0.0485;
+float noiseScaleH1 = 0.088; 
+float noiseScaleH2 = 0.089; 
+float noiseScaleH3 = 0.087;
+float noiseScaleH4 = 0.090; 
+float noiseScaleH5 = 0.086; 
+float noiseScaleH6 = 0.091;
+float noiseScaleH7 = 0.085; 
+float noiseScaleH8 = 0.0885;
 // Values for qualitative variables -> Making it +0.03? no, let's lower them...
 //float noiseScaleE4 = 0.02;float noiseScaleM4 = 0.06;float noiseScaleH4 = 0.11; 
 //float noiseScaleE5 = 0.025;float noiseScaleM5 = 0.0605;float noiseScaleH5 = 0.105; 
 //float noiseScaleE6 = 0.015;float noiseScaleM6 = 0.061;float noiseScaleH6 = 0.115;
-float noiseScaleE4 = 0.0150;
-float noiseScaleM4 = 0.040;
-float noiseScaleH4 = 0.080; 
-float noiseScaleE5 = 0.0155;
-float noiseScaleM5 = 0.045;
-float noiseScaleH5 = 0.085; 
-float noiseScaleE6 = 0.0145;
-float noiseScaleM6 = 0.035;
-float noiseScaleH6 = 0.075;
-
-float noiseScaleE7 = 0.0155;
-float noiseScaleM7 = 0.045;
-float noiseScaleH7 = 0.085; 
-float noiseScaleE8 = 0.01455;
-float noiseScaleM8 = 0.0445;
-float noiseScaleH8 = 0.0845; 
-
-
 
 Table table;
 
@@ -177,17 +175,12 @@ void setup() {
   int countBinDurGPS=0; 
   int countBinDurPhone=0; 
   int countBinDurWiper=0; 
+  int countBinDurHeatingSeatsOn =0; 
   int prevGPS=0; 
   int prevPhone=0; 
   int prevWiper = 0;
 
-  float minValEngineTemperature = Float.MAX_VALUE; 
-  float maxValEngineTemperature = Float.MIN_VALUE; 
-  float minValFuelConsumption = Float.MAX_VALUE; 
-  float maxValFuelConsumption = Float.MIN_VALUE; 
-  
-  float minValComputerElectricityConsumption = Float.MAX_VALUE; float maxValComputerElectricityConsumption = Float.MIN_VALUE;
-  int countBinDurHeatingSeatsOn =0; 
+  float minValEngineTemperature = Float.MAX_VALUE; float maxValEngineTemperature = Float.MIN_VALUE; float minValFuelConsumption = Float.MAX_VALUE; float maxValFuelConsumption = Float.MIN_VALUE; float minValComputerElectricityConsumption = Float.MAX_VALUE; float maxValComputerElectricityConsumption = Float.MIN_VALUE;
 
   
   float valVarEg = 0, valVarFc = 0; 
@@ -255,38 +248,35 @@ void setup() {
     dEnd = rowFive.getString("t"); 
     odtEnd = OffsetDateTime.parse(dEnd); 
     millisEnd = odtEnd.toInstant().toEpochMilli();    
-    float smoothDistMeter = distFrom(xPosBeg, yPosBeg, xPosEnd, yPosEnd); 
-    float smoothDistKmPoints = smoothDistMeter/100; 
-    float speedSmooth=smoothDistKmPoints/timeDiffZero; 
-    float speedSmoothKmH = smoothDistKmPoints/timeDiffHZero;
+    float smoothDistMeter = distFrom(xPosBeg, yPosBeg, xPosEnd, yPosEnd); float smoothDistKmPoints = smoothDistMeter/100; float speedSmooth=smoothDistKmPoints/timeDiffZero; float speedSmoothKmH = smoothDistKmPoints/timeDiffHZero;
 
+    // Should we consider variations on noise generations?!
     float noiseVal = noise((countRow)*noiseScaleE1, noiseScaleE1);
-    float noiseValE1 = noise ( countRow*noiseScaleE1, noiseScaleE1 ); 
-    float noiseValM1 = noise ( countRow*noiseScaleM1, noiseScaleM1 ); 
-    float noiseValH1 = noise ( countRow*noiseScaleH1, noiseScaleH1 );
-    float noiseValE2 = noise ( countRow*noiseScaleE2, noiseScaleE2 ); 
-    float noiseValM2 = noise ( countRow*noiseScaleM2, noiseScaleM2 ); 
-    float noiseValH2 = noise ( countRow*noiseScaleH2, noiseScaleH2 );
-    float noiseValE3 = noise ( countRow*noiseScaleE3, noiseScaleE3 ); 
-    float noiseValM3 = noise ( countRow*noiseScaleM3, noiseScaleM3 ); 
-    float noiseValH3 = noise ( countRow*noiseScaleH3, noiseScaleH3 );
-    float noiseValE4 = noise ( countRow*noiseScaleE4, noiseScaleE4 ); 
-    float noiseValM4 = noise ( countRow*noiseScaleM4, noiseScaleM4 ); 
-    float noiseValH4 = noise ( countRow*noiseScaleH4, noiseScaleH4 );
-    float noiseValE5 = noise ( countRow*noiseScaleE5, noiseScaleE5 ); 
-    float noiseValM5 = noise ( countRow*noiseScaleM5, noiseScaleM5 ); 
-    float noiseValH5 = noise ( countRow*noiseScaleH5, noiseScaleH5 );
-    float noiseValE6 = noise ( countRow*noiseScaleE6, noiseScaleE6 ); 
-    float noiseValM6 = noise ( countRow*noiseScaleM6, noiseScaleM6 ); 
-    float noiseValH6 = noise ( countRow*noiseScaleH6, noiseScaleH6 );
-    // Added for new attributes - 7 and 8 specific for new attributes
-    float noiseValE7 = noise ( countRow*noiseScaleE7, noiseScaleE7 );
-    float noiseValM7 = noise ( countRow*noiseScaleM7, noiseScaleM7 );
-    float noiseValH7 = noise ( countRow*noiseScaleH7, noiseScaleH7 );
-    float noiseValE8 = noise ( countRow*noiseScaleE8, noiseScaleE8 );
-    float noiseValM8 = noise ( countRow*noiseScaleM8, noiseScaleM8 );
-    float noiseValH8 = noise ( countRow*noiseScaleH8, noiseScaleH8 );
-
+    // float noiseValE1 = noise ( countRow*noiseScaleE1, noiseScaleE1 ); // float noiseValM1 = noise ( countRow*noiseScaleM1, noiseScaleM1 ); // float noiseValH1 = noise ( countRow*noiseScaleH1, noiseScaleH1 ); // float noiseValE2 = noise ( countRow*noiseScaleE2, noiseScaleE2 ); // float noiseValM2 = noise ( countRow*noiseScaleM2, noiseScaleM2 ); // float noiseValH2 = noise ( countRow*noiseScaleH2, noiseScaleH2 ); // float noiseValE3 = noise ( countRow*noiseScaleE3, noiseScaleE3 ); // float noiseValM3 = noise ( countRow*noiseScaleM3, noiseScaleM3 ); // float noiseValH3 = noise ( countRow*noiseScaleH3, noiseScaleH3 ); // float noiseValE4 = noise ( countRow*noiseScaleE4, noiseScaleE4 ); // float noiseValM4 = noise ( countRow*noiseScaleM4, noiseScaleM4 ); // float noiseValH4 = noise ( countRow*noiseScaleH4, noiseScaleH4 ); // float noiseValE5 = noise ( countRow*noiseScaleE5, noiseScaleE5 ); // float noiseValM5 = noise ( countRow*noiseScaleM5, noiseScaleM5 ); // float noiseValH5 = noise ( countRow*noiseScaleH5, noiseScaleH5 ); // float noiseValE6 = noise ( countRow*noiseScaleE6, noiseScaleE6 ); // float noiseValM6 = noise ( countRow*noiseScaleM6, noiseScaleM6 ); // float noiseValH6 = noise ( countRow*noiseScaleH6, noiseScaleH6 ); // float noiseValE7 = noise ( countRow*noiseScaleE7, noiseScaleE7 ); // float noiseValM7 = noise ( countRow*noiseScaleM7, noiseScaleM7 ); // float noiseValH7 = noise ( countRow*noiseScaleH7, noiseScaleH7 ); // float noiseValE8 = noise ( countRow*noiseScaleE8, noiseScaleE8 ); // float noiseValM8 = noise ( countRow*noiseScaleM8, noiseScaleM8 ); // float noiseValH8 = noise ( countRow*noiseScaleH8, noiseScaleH8 );
+    float noiseValE1 = noise ( countRow*noiseScaleE1, noiseScaleE1, noiseScaleE1 );
+    float noiseValE2 = noise ( noiseScaleE2, countRow*noiseScaleE2, noiseScaleE2 );
+    float noiseValE3 = noise ( noiseScaleE3, noiseScaleE3, countRow*noiseScaleE3 );
+    float noiseValE4 = noise ( countRow*noiseScaleE4 , countRow*noiseScaleE4, noiseScaleE4 );
+    float noiseValE5 = noise ( countRow*noiseScaleE5, noiseScaleE5, countRow*noiseScaleE5 );
+    float noiseValE6 = noise ( noiseScaleE6, countRow*noiseScaleE6, countRow*noiseScaleE6 );
+    float noiseValE7 = noise ( countRow*noiseScaleE7, countRow*noiseScaleE7, countRow*noiseScaleE7 );
+    float noiseValE8 = noise ( 2*countRow*noiseScaleE8 , noiseScaleE8, noiseScaleE8 ); // unclear on what to do with that variation
+    float noiseValM1 = noise ( countRow*noiseScaleM1, noiseScaleM1, noiseScaleM1 );
+    float noiseValM2 = noise ( noiseScaleM2, countRow*noiseScaleM2, noiseScaleM2 );
+    float noiseValM3 = noise ( noiseScaleM3, noiseScaleM3, countRow*noiseScaleM3 );
+    float noiseValM4 = noise ( countRow*noiseScaleM4, countRow*noiseScaleM4, noiseScaleM4 );
+    float noiseValM5 = noise ( countRow*noiseScaleM5, noiseScaleM5, countRow*noiseScaleM5 );
+    float noiseValM6 = noise ( noiseScaleM6, countRow*noiseScaleM6, countRow*noiseScaleM6 );
+    float noiseValM7 = noise ( countRow*noiseScaleM7, countRow*noiseScaleM7, countRow*noiseScaleM7 );
+    float noiseValM8 = noise ( 2*countRow*noiseScaleM8, noiseScaleM8, noiseScaleM8 ); // unclear on what to do with that variation
+    float noiseValH1 = noise ( countRow*noiseScaleH1, noiseScaleH1, noiseScaleH1 );
+    float noiseValH2 = noise ( noiseScaleH2, countRow*noiseScaleH2, noiseScaleH2 );
+    float noiseValH3 = noise ( noiseScaleH3, noiseScaleH3, countRow*noiseScaleH3 );
+    float noiseValH4 = noise ( countRow*noiseScaleH4, countRow*noiseScaleH4, noiseScaleH4 );
+    float noiseValH5 = noise ( countRow*noiseScaleH5, noiseScaleH5, countRow*noiseScaleH5 );
+    float noiseValH6 = noise ( noiseScaleH6, countRow*noiseScaleH6, countRow*noiseScaleH6 );
+    float noiseValH7 = noise ( countRow*noiseScaleH7, countRow*noiseScaleH7, countRow*noiseScaleH7 );
+    float noiseValH8 = noise ( 2*countRow*noiseScaleH8, noiseScaleH8, noiseScaleH8 ); // unclear on what to do with that variation
 
     // Previous values of ranges to multiply to random values: noiseTemperature_E 30, noiseSuspensionSpringForce_E 2.1, noiseFuelConsumption_E 75 // IMPORTANT This is where we can think about values for the queries for the masks.
     float valVariationsShared = 45;
@@ -299,18 +289,14 @@ void setup() {
     float noiseFuelConsumption_E = 75 + noiseValE3*valVariationsShared;
     float noiseFuelConsumption_M = 75 + noiseValM3*valVariationsShared; 
     float noiseFuelConsumption_H = 75 + noiseValH3*valVariationsShared; // What unit are we expecting here? // miles per gallon // https://www.kbb.com/what-is/mpg/
-    
-    // 
     float noiseComputerElectricityConsumption_E = 55 + noiseValE7*valVariationsShared; // value selected as base for computerElectricityConsumption when we don't know about it
     float noiseComputerElectricityConsumption_M = 55 + noiseValM7*valVariationsShared; 
     float noiseComputerElectricityConsumption_H = 55 + noiseValH7*valVariationsShared; 
 
+    // We'll generate values in between 0 and 10, and depending if over 5 we'll make it 
     float quantHeatingSeatsOn_E=noiseValE8*10;
     float quantHeatingSeatsOn_M=noiseValM8*10;
     float quantHeatingSeatsOn_H=noiseValH8*10; 
-
-
-    // We'll generate values in between 0 and 10, and depending if over 5 we'll make it 
     float quantWiper_E=noiseValE4*10;
     float quantWiper_M=noiseValM4*10;
     float quantWiper_H=noiseValH4*10; 
@@ -322,18 +308,16 @@ void setup() {
     float quantPhone_H=noiseValH6*10;
     // Noise quant
     float noiseValPassengers = noise(countRow*noiseScaleE1, noiseScaleE1); 
-    float noiseValGPS = noise(countRow*noiseScaleE1, noiseScaleE1); 
-    float noiseValWiperOn = noise(countRow*noiseScaleE1, noiseScaleE1); 
-    float noiseValPhone = noise(2*countRow*noiseScaleE1, noiseScaleE1);
-
-    float noiseValHeatingSeatsOn = noise(2*countRow*noiseScaleE1, noiseScaleE1);
+    float noiseValGPS = noise(countRow*noiseScaleE1, noiseScaleE1, noiseScaleE1); 
+    float noiseValWiperOn = noise(noiseScaleE2, countRow*noiseScaleE2, noiseScaleE2 ); 
+    float noiseValPhone = noise(noiseScaleE3, noiseScaleE3, 2*countRow*noiseScaleE3);
+    float noiseValHeatingSeatsOn = noise(2*countRow*noiseScaleE4, noiseScaleE4, countRow*noiseScaleE4);
     
     // Noise qual
     int noisePassengers = (int) (noiseValPassengers*4); 
     int noiseGPSon= (int) (noiseValGPS*2); 
     int noisePhone= (int) (noiseValPhone*2); 
-    int noiseWiperOn = (int) (noiseValWiperOn*2);
-    
+    int noiseWiperOn = (int) (noiseValWiperOn*2);    
     int noiseHeatingSeatsOn = (int) (noiseValHeatingSeatsOn*2);
 
     float x = row.getFloat("x"); float y = row.getFloat("y"); String d = row.getString("t"); OffsetDateTime odt = OffsetDateTime.parse(d); 
@@ -395,27 +379,20 @@ void setup() {
       float noiseComputerElectricityConsumption = noiseComputerElectricityConsumption_E;
       
       int actualCountForEnd_GPS = countForEnd, actualCountForEnd_Phone = countForEnd, actualCountForEnd_Wiper = countForEnd, actualCountForEnd_HeatingSeatsOn = countForEnd;
-      int countEnd_E = 40; 
-      int countEnd_M = 36; 
-      int countEnd_H = 32;
-
-      int qualGPS=0; 
-      int qualPhone=0; 
-      int qualWiper=0;
+      int countEnd_E = 40; int countEnd_M = 36; int countEnd_H = 32;
+      int qualGPS=0; int qualPhone=0; int qualWiper=0; int qualHeatingSeatsOn=0;
       
-      int qualHeatingSeatsOn=0;
-      
-      // Too many combinations. Let's reduce to Qn and Ql with the same difficulty but with different noise previously established (consider change...)
-      // EE;EM;ME;MM;EH;HE;MH;HM; HH for exceptional case
-      // Changes for the possibility to vary with repetition of difficulties in mods. We order the attributes in three groups [gpsOn,EngineTemperature|carPhoneUsed,fuelConsumption|wiperOn,suspensionSpringForce] 
+      // Changes for the possibility to vary with repetition of difficulties in mods. 
+      // We order the attributes in three groups [gpsOn,EngineTemperature|carPhoneUsed,fuelConsumption|wiperOn,suspensionSpringForce] 
       if (modId == 0) { 
         actualCountForEnd_GPS = countEnd_E; noiseTemperature = noiseTemperature_E;        
         actualCountForEnd_Phone = countEnd_M; noiseFuelConsumption = noiseFuelConsumption_M; 
         actualCountForEnd_Wiper = countEnd_H; noiseSuspensionSpringForce = noiseSuspensionSpringForce_H;
          
+         // WHY ARE THEY ALL EASY HERE?! // Update 2021-May-12 change accordingly to name of the attribute, like we do for WHAT_Qn!!!
         if (quantGPS_E>5) { qualGPS=1; };
-        if (quantWiper_E>5) { qualWiper=1;  };
-        if (quantPhone_E>5) { qualPhone=1; };
+        if (quantPhone_M>5) { qualPhone=1; };
+        if (quantWiper_H>5) { qualWiper=1;  };
         
         noiseComputerElectricityConsumption = noiseComputerElectricityConsumption_E;
         actualCountForEnd_HeatingSeatsOn = countEnd_E;
@@ -427,8 +404,8 @@ void setup() {
         actualCountForEnd_Wiper = countEnd_H; noiseSuspensionSpringForce = noiseSuspensionSpringForce_H;
         
         if (quantGPS_M>5) { qualGPS=1; };
-        if (quantWiper_M>5) { qualWiper=1; };
-        if (quantPhone_M>5) { qualPhone=1; };
+        if (quantPhone_E>5) { qualPhone=1; };
+        if (quantWiper_H>5) { qualWiper=1; };
         
         noiseComputerElectricityConsumption = noiseComputerElectricityConsumption_M;
         actualCountForEnd_HeatingSeatsOn = countEnd_M;
@@ -440,8 +417,8 @@ void setup() {
         actualCountForEnd_Wiper = countEnd_M; noiseSuspensionSpringForce = noiseSuspensionSpringForce_M;
         
         if (quantGPS_E>5) { qualGPS=1; };
-        if (quantWiper_E>5) { qualWiper=1; };
-        if (quantPhone_E>5) { qualPhone=1; };
+        if (quantPhone_H>5) { qualPhone=1; };
+        if (quantWiper_M>5) { qualWiper=1; };
         
         noiseComputerElectricityConsumption = noiseComputerElectricityConsumption_E;
         actualCountForEnd_HeatingSeatsOn = countEnd_E;
@@ -452,9 +429,9 @@ void setup() {
         actualCountForEnd_Phone = countEnd_M; noiseFuelConsumption = noiseFuelConsumption_M;
         actualCountForEnd_Wiper = countEnd_E; noiseSuspensionSpringForce = noiseSuspensionSpringForce_E;
         
-        if (quantGPS_M>5) { qualGPS=1; };
-        if (quantWiper_M>5) { qualWiper=1; };
+        if (quantGPS_H>5) { qualGPS=1; };
         if (quantPhone_M>5) { qualPhone=1; };
+        if (quantWiper_E>5) { qualWiper=1; };
         
         noiseComputerElectricityConsumption = noiseComputerElectricityConsumption_M;
         actualCountForEnd_HeatingSeatsOn = countEnd_M;
@@ -466,8 +443,8 @@ void setup() {
         actualCountForEnd_Wiper = countEnd_M; noiseSuspensionSpringForce = noiseSuspensionSpringForce_M;
         
         if (quantGPS_H>5) { qualGPS=1; };
-        if (quantWiper_H>5) { qualWiper=1; };
-        if (quantPhone_H>5) { qualPhone=1; };
+        if (quantPhone_E>5) { qualPhone=1; };
+        if (quantWiper_M>5) { qualWiper=1; };
         
         noiseComputerElectricityConsumption = noiseComputerElectricityConsumption_H;
         actualCountForEnd_HeatingSeatsOn = countEnd_H;
@@ -478,9 +455,9 @@ void setup() {
         actualCountForEnd_Phone = countEnd_H; noiseFuelConsumption = noiseFuelConsumption_H; 
         actualCountForEnd_Wiper = countEnd_E; noiseSuspensionSpringForce = noiseSuspensionSpringForce_E;
         
-        if (quantGPS_E>5) { qualGPS=1; };
+        if (quantGPS_M>5) { qualGPS=1; };
+        if (quantPhone_H>5) { qualPhone=1; };
         if (quantWiper_E>5) { qualWiper=1; };
-        if (quantPhone_E>5) { qualPhone=1; };
         
         noiseComputerElectricityConsumption = noiseComputerElectricityConsumption_E;
         actualCountForEnd_HeatingSeatsOn = countEnd_E;
@@ -491,9 +468,9 @@ void setup() {
         actualCountForEnd_Phone = countEnd_M; noiseFuelConsumption = noiseFuelConsumption_M;
         actualCountForEnd_Wiper = countEnd_H; noiseSuspensionSpringForce = noiseSuspensionSpringForce_H;
         
-        if (quantGPS_H>5) { qualGPS=1; };
+        if (quantGPS_E>5) { qualGPS=1; };
+        if (quantPhone_M>5) { qualPhone=1; };
         if (quantWiper_H>5) { qualWiper=1; };
-        if (quantPhone_H>5) { qualPhone=1; };
         
         noiseComputerElectricityConsumption = noiseComputerElectricityConsumption_H;
         actualCountForEnd_HeatingSeatsOn = countEnd_H;
@@ -505,8 +482,8 @@ void setup() {
         actualCountForEnd_Wiper = countEnd_H; noiseSuspensionSpringForce = noiseSuspensionSpringForce_H;
         
         if (quantGPS_M>5) { qualGPS=1; };
-        if (quantWiper_M>5) { qualWiper=1; };
-        if (quantPhone_M>5) { qualPhone=1; };
+        if (quantPhone_E>5) { qualPhone=1; };
+        if (quantWiper_H>5) { qualWiper=1; };
         
         noiseComputerElectricityConsumption = noiseComputerElectricityConsumption_M;
         actualCountForEnd_HeatingSeatsOn = countEnd_M; 
@@ -517,9 +494,9 @@ void setup() {
         actualCountForEnd_Phone = countEnd_H; noiseFuelConsumption = noiseFuelConsumption_H; 
         actualCountForEnd_Wiper = countEnd_E; noiseSuspensionSpringForce = noiseSuspensionSpringForce_E;
         
-        if (quantGPS_H>5) { qualGPS=1; };
-        if (quantWiper_H>5) { qualWiper=1; };
+        if (quantGPS_M>5) { qualGPS=1; };
         if (quantPhone_H>5) { qualPhone=1; };
+        if (quantWiper_E>5) { qualWiper=1; };
         
         noiseComputerElectricityConsumption = noiseComputerElectricityConsumption_H;
         actualCountForEnd_HeatingSeatsOn = countEnd_H; 
@@ -617,49 +594,29 @@ void setup() {
         float nextY = nextRow.getFloat("y"); 
         utmNext = proj.invTransformCoords( new PVector(nextY, nextX) );
         TableRow befRow; 
-        if ( totalRowCount>0 ) {
-          befRow = table.getRow(totalRowCount-1);
-        } else { 
-          befRow= row;
-        } 
+        if ( totalRowCount>0 ) { befRow = table.getRow(totalRowCount-1);} else { befRow= row;} 
         float befX = befRow.getFloat("x"); 
         float befY = befRow.getFloat("y"); 
         utmBef = proj.invTransformCoords( new PVector(befY, befX) );
 
         // What about selection of the far angle?... 5,3, something else?
         TableRow farRow; 
-        if (numRows>totalRowCount+4) { 
-          farRow = table.getRow(totalRowCount+5);
-        } else { 
-          farRow = row;
-        }
+        if (numRows>totalRowCount+4) { farRow = table.getRow(totalRowCount+5); } else { farRow = row; }
         float farX = farRow.getFloat("x"); 
         float farY = farRow.getFloat("y"); 
         utmFar = proj.invTransformCoords( new PVector(farX, farY) );
         TableRow priorRow; 
-        if (totalRowCount>4) { 
-          priorRow = table.getRow(totalRowCount-5);
-        } else { 
-          priorRow = table.getRow(0);
-        }
+        if (totalRowCount>4) {priorRow = table.getRow(totalRowCount-5); } else { priorRow = table.getRow(0); }
         float priorX = priorRow.getFloat("x"); 
         float priorY = priorRow.getFloat("y"); 
         utmPrior = proj.invTransformCoords( new PVector(priorX, priorY) );
         TableRow farVRow; 
-        if (numRows>totalRowCount+9) { 
-          farVRow = table.getRow(totalRowCount+10);
-        } else { 
-          farVRow = row;
-        }
+        if (numRows>totalRowCount+9) { farVRow = table.getRow(totalRowCount+10); } else {  farVRow = row; }
         float farVX = farVRow.getFloat("x"); 
         float farVY = farVRow.getFloat("y"); 
         utmVFar = proj.invTransformCoords( new PVector(farVX, farVY) );
         TableRow priorVRow; 
-        if (totalRowCount>9) { 
-          priorVRow = table.getRow(totalRowCount-10);
-        } else { 
-          priorVRow = table.getRow(0);
-        }
+        if (totalRowCount>9) { priorVRow = table.getRow(totalRowCount-10); } else {  priorVRow = table.getRow(0); }
         float priorVX = priorVRow.getFloat("x"); 
         float priorVY = priorVRow.getFloat("y"); 
         utmVPrior = proj.invTransformCoords( new PVector(priorVX, priorVY) );
@@ -669,87 +626,28 @@ void setup() {
         float dist = cartesianDist(utm.x, utm.y, utmNext.x, utmNext.y); 
         float distFar = cartesianDist(utm.x, utm.y, utmFar.x, utmFar.y); 
         sumDist+=dist;
-        if ( dist>maxDist ) {
-          maxDist=dist;
-        } 
-        if (dist> averageDist ) {
-          amountOverAvg++;
-        } 
+        if ( dist>maxDist ) {maxDist=dist;} 
+        if (dist> averageDist ) {amountOverAvg++;} 
         sumDiffToAvg+= Math.abs(dist-averageDist);
 
         // Verify if part of north, south, east or west.
         String dir = ""; 
-        if (angle >=45 && angle <135) {
-          dir="North";
-        } else if (angle >=135 && angle<225 ) {
-          dir="West";
-        } else if (angle >=225 && angle <315) {
-          dir="South";
-        } else {
-          dir="East";
-        }
+        if (angle >=45 && angle <135) { dir="North"; } else if (angle >=135 && angle<225 ) { dir="West"; } else if (angle >=225 && angle <315) { dir="South"; } else { dir="East"; }
         float diffAngleLocal = 0; 
         float valAngleBase;
-        if (dir=="North") { 
-          valAngleBase=90;
-        } else if (dir=="South") { 
-          valAngleBase=270;
-        } else if (dir=="West") { 
-          valAngleBase=180;
-        } else { 
-          valAngleBase=0;
-        } // Might to be more clever here...
-        if (totalRowCount==0) {
-          oldDir=dir;
-        } 
-        if (dir != "East") {
-          diffAngleLocal = angle - valAngleBase;
-        } else { 
-          if (angle<=360 && angle>= 315) { 
-            diffAngleLocal= angle-360;
-          } else { 
-            diffAngleLocal=angle;
-          }
-        }          
+        if (dir=="North") {  valAngleBase=90;} else if (dir=="South") { valAngleBase=270;} else if (dir=="West") { valAngleBase=180;} else { valAngleBase=0;} // Might to be more clever here...
+        if (totalRowCount==0) {oldDir=dir;}if (dir != "East") {diffAngleLocal = angle - valAngleBase;} else { if (angle<=360 && angle>= 315) { diffAngleLocal= angle-360;} else { diffAngleLocal=angle;}}          
         diffAngleTotal+=diffAngleLocal;
 
         String dirFar = ""; 
-        if (angleFar >=45 && angleFar <135) {
-          dirFar="North";
-        } else if (angleFar >=135 && angleFar<225 ) {
-          dirFar="West";
-        } else if (angleFar >=225 && angleFar <315) {
-          dirFar="South";
-        } else {
-          dirFar="East";
-        }
+        if (angleFar >=45 && angleFar <135) { dirFar="North"; } else if (angleFar >=135 && angleFar<225 ) { dirFar="West"; } else if (angleFar >=225 && angleFar <315) { dirFar="South"; } else { dirFar="East"; }
         float diffAngleFar = 0; 
         float valAngleFar;
-        if (dirFar=="North") { 
-          valAngleFar=90;
-        } else if (dirFar=="South") { 
-          valAngleFar=270;
-        } else if (dirFar=="West") { 
-          valAngleFar=180;
-        } else { 
-          valAngleFar=0;
-        } // Might to be more clever here...
-        if (totalRowCount==0) {
-          oldDirFar=dirFar;
-        } 
-        if (dirFar != "East") {
-          diffAngleLocal = angleFar - valAngleFar;
-        } else { 
-          if (angleFar<=360 && angleFar>= 315) { 
-            diffAngleFar= angleFar-360;
-          } else { 
-            diffAngleFar=angleFar;
-          }
-        }          
+        if (dirFar=="North") { valAngleFar=90; } else if (dirFar=="South") { valAngleFar=270;} else if (dirFar=="West") {valAngleFar=180; } else { valAngleFar=0; }         
+        if (totalRowCount==0) { oldDirFar=dirFar; } 
+        if (dirFar != "East") { diffAngleLocal = angleFar - valAngleFar; } else { if (angleFar<=360 && angleFar>= 315) { diffAngleFar= angleFar-360; } else {  diffAngleFar=angleFar;} }          
         diffAngleTotalFar+=diffAngleFar;
-        if (dist < averageClean) { 
-          dirFar=dir;
-        } 
+        if (dist < averageClean) { dirFar=dir;} 
 
         float dist_i_to_imn = cartesianDist(priorX, priorY, x, y); 
         float dist_i_to_ipn = cartesianDist(x, y, farX, farY); 
@@ -807,7 +705,6 @@ void setup() {
             countOvAvgStrClose++;
           }
         }
-
 
         // ---------------------------- Looping to fill the xSmooth and utmxSmooth
         ArrayList<TableRow> arTableRow = new ArrayList<TableRow>();
@@ -894,7 +791,7 @@ void setup() {
 // 0.0010867288
 
 float xoff = 0.0;
-float noiseScaleTest = 0.01; // 0.02 Pretty smooth; 0.1 medium messy; 0.9 mess af
+float noiseScaleTest = 0.09; // 0.02 Pretty smooth; 0.1 medium messy; 0.9 mess af
 Random rnd = new Random();
 int cptDraw=0;
 
@@ -903,7 +800,7 @@ void draw() {
     //background(204); //xoff = xoff + .01; //float n = noise(xoff) * width; //line(n, 0, n, height);
     background(0);
     for (int x=0; x < width; x++) {
-      float noiseVal = noise((x)*noiseScaleTest, noiseScaleTest);
+      float noiseVal = noise((x)*noiseScaleTest, 2*noiseScaleTest,(x)*noiseScaleTest);
       //float noiseVal = noise(rnd.nextInt() * noiseScaleTest, noiseScaleTest);
       stroke(noiseVal*255);
       float randomVal = noiseVal*height;
@@ -913,29 +810,6 @@ void draw() {
     }
   }
 }
-
-
-//void draw() {
-//  background(250,0,0);
-//  //int s = second(); int m = minute(); int h = hour(); line(s, 0, s, 33); line(m, 33, m, 66); line(h, 66, h, 100);
-//  //for (int x=0; x < width; x++) {    
-//    //float noiseVal = noise((mouseX+x)*noiseScale, mouseY*noiseScale);
-//  int x=0;
-//  for (TableRow row : table.rows()) {
-//    float noiseVal = row.getFloat("engineTemperature");
-//    int noisePassengers = row.getInt("numberPassengers");
-//    //float noiseVal = noise((mouseX+x)*noiseScale, mouseY*noiseScale);
-//    //float noiseVal = noise((x)*noiseScale, x*noiseScale, x*noiseScale);
-//    stroke(noiseVal*255);
-//    //println("(noiseVal): "+(noiseVal)+", mouseY: "+mouseY);
-//    //line(x, mouseY+noiseVal*60, x, height);
-//    //line(x, 60+noiseVal*30, x, height);
-//    //println("(noisePassengers): "+(noisePassengers)+", mouseY: "+mouseY);
-//    //line(x, noiseVal, x, height);
-//    line(x, (height/4)*noisePassengers , x, height);
-//    x++;
-//  }
-//}
 
 // Takes latitude/longitude and returns meters
 public static float distFrom(float lat1, float lng1, float lat2, float lng2) {
@@ -951,7 +825,8 @@ public static float distFrom(float lat1, float lng1, float lat2, float lng2) {
   return dist;
 }
 
-float cartesianDist(float x1, float y1, float x2, float y2) {
+float cartesianDist(float x1, float y1, float x2, float y2) 
+{
   return (float) Math.sqrt( (x1-x2)*(x1-x2) + (y1-y2)*(y1-y2)  );
 }
 
@@ -963,12 +838,6 @@ public static float GetAngleOfLineBetweenTwoPoints(float p1X, float p1Y, float p
   if (rez<0) rez+=360;
   return rez;
 }
-//// Works fine
-//println("test angle, between 10,10 and 15,15: "+ (GetAngleOfLineBetweenTwoPoints(10,10,15,15)));
-//println("test angle, between 10,10 and 10,15: "+ (GetAngleOfLineBetweenTwoPoints(10,10,10,15)));
-//println("test angle, between 10,10 and 15,10: "+ (GetAngleOfLineBetweenTwoPoints(10,10,15,10)));
-
-
 
 /**
  * Find the new point for a smoothed line segment 

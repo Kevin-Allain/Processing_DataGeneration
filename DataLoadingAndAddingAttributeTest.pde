@@ -6,129 +6,73 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import org.gicentre.utils.spatial.UTM;
 import org.gicentre.utils.spatial.Ellipsoid;
-//import org.gicentre.geomap.GeoMap;
-//import org.gicentre.utils.spatial.Ellipsoid;
-//import org.gicentre.utils.spatial.UTM;
-//import org.joda.time.DateTime;
-//import org.joda.time.format.DateTimeFormat;
-//import org.joda.time.format.DateTimeFormatter;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.lang.Object;
+/* package com.javainterviewpoint; import org.json.simple.JSONArray; import org.json.simple.JSONObject; import org.json.simple.parser.JSONParser; */
+//import org.gicentre.geomap.GeoMap; //import org.gicentre.utils.spatial.Ellipsoid;//import org.gicentre.utils.spatial.UTM;//import org.joda.time.DateTime;//import org.joda.time.format.DateTimeFormat;//import org.joda.time.format.DateTimeFormatter;
 
 float noiseScale0 = 0.01; // 0.02 Pretty smooth; 0.1 medium messy; 0.9 mess af // Keep a structure with noise((i++)*noiseScale,noiseScale)
 // By a lot. Old values: 0.02; 0.1; 0.3. Let's try 0.01; 0.05 and 0.1
 // 2021 May 12 => Ease more? Let's try 0.0090; 0.048 and 0.088
-float noiseScaleE1 = 0.0090;
-float noiseScaleE2 = 0.0089;
-float noiseScaleE3 = 0.0091;
-float noiseScaleE4 = 0.0088;
-float noiseScaleE5 = 0.0092;
-float noiseScaleE6 = 0.0087;
-float noiseScaleE7 = 0.0093;
-float noiseScaleE8 = 0.00915;
-float noiseScaleM1 = 0.048;
-float noiseScaleM2 = 0.049;
-float noiseScaleM3 = 0.047;
-float noiseScaleM4 = 0.050;
-float noiseScaleM5 = 0.046;
-float noiseScaleM6 = 0.051;
-float noiseScaleM7 = 0.045;
-float noiseScaleM8 = 0.0485;
-float noiseScaleH1 = 0.088; 
-float noiseScaleH2 = 0.089; 
-float noiseScaleH3 = 0.087;
-float noiseScaleH4 = 0.090; 
-float noiseScaleH5 = 0.086; 
-float noiseScaleH6 = 0.091;
-float noiseScaleH7 = 0.085; 
-float noiseScaleH8 = 0.0885;
+float noiseScaleE1 = 0.0090; float noiseScaleE2 = 0.0089;float noiseScaleE3 = 0.0091;float noiseScaleE4 = 0.0088;float noiseScaleE5 = 0.0092;float noiseScaleE6 = 0.0087;float noiseScaleE7 = 0.0093;float noiseScaleE8 = 0.00915;
+float noiseScaleM1 = 0.048;float noiseScaleM2 = 0.049;float noiseScaleM3 = 0.047;float noiseScaleM4 = 0.050;float noiseScaleM5 = 0.046;float noiseScaleM6 = 0.051;float noiseScaleM7 = 0.045;float noiseScaleM8 = 0.0485;
+float noiseScaleH1 = 0.088;float noiseScaleH2 = 0.089;float noiseScaleH3 = 0.087;float noiseScaleH4 = 0.090;float noiseScaleH5 = 0.086;float noiseScaleH6 = 0.091;float noiseScaleH7 = 0.085;float noiseScaleH8 = 0.0885;
 // Values for qualitative variables -> Making it +0.03? no, let's lower them...
-//float noiseScaleE4 = 0.02;float noiseScaleM4 = 0.06;float noiseScaleH4 = 0.11; 
-//float noiseScaleE5 = 0.025;float noiseScaleM5 = 0.0605;float noiseScaleH5 = 0.105; 
-//float noiseScaleE6 = 0.015;float noiseScaleM6 = 0.061;float noiseScaleH6 = 0.115;
+//float noiseScaleE4 = 0.02;float noiseScaleM4 = 0.06;float noiseScaleH4 = 0.11; float noiseScaleE5 = 0.025;float noiseScaleM5 = 0.0605;float noiseScaleH5 = 0.105;float noiseScaleE6 = 0.015;float noiseScaleM6 = 0.061;float noiseScaleH6 = 0.115;
 
 Table table;
+JSONArray jsonData;
+JSONArray glbl_DataComplexFinal;
 
 UTM proj = new UTM(new Ellipsoid(Ellipsoid.WGS_84), 35, 'S');    // UTM zone centred on Mediterranean
-PVector utm = null;
-PVector utmNext=null;
-PVector utmBef=null;
-PVector utmFar=null;
-PVector utmPrior=null;
-PVector utmVFar=null;
-PVector utmVPrior=null;
-
-PVector utmSmooth=null; 
-PVector utmSmoothLoop=null;
+PVector utm = null;PVector utmNext=null;PVector utmBef=null;PVector utmFar=null;PVector utmPrior=null;PVector utmVFar=null;PVector utmVPrior=null; PVector utmSmooth=null; PVector utmSmoothLoop=null;
 
 void setup() {
+  // jsonData = loadJSONArray("kaLineData.210717-1930_10.json");
+  jsonData = loadJSONArray("kaLineData.210725-1836_31.json");
+  glbl_DataComplexFinal = loadJSONArray("glbl_DataComplexFinal.json");
+
   //table = loadTable("C:/Users/kevin/Documents/VAST challenges datasets/VASTChallenge2014/eclipse/vast2014/src/data/jwoData/gps.csv", "header");
   table = loadTable("C:/Users/kevin/Documents/VAST challenges datasets/VASTChallenge2014/Extracted_Modified/gps_time.csv", "header");
   //table = loadTable("C:/Users/kevin/Documents/VAST challenges datasets/VASTChallenge2014/Extracted_Modified/gps_10Jan2014_ID1.csv", "header");
   //table = loadTable("C:/Users/kevin/Documents/VAST challenges datasets/VASTChallenge2014/Extracted_Modified/gps_10Jan2014_IDALL.csv", "header");
   println(table.getRowCount() + " total rows in table");
-  table.addColumn("engineTemperature"); // Normal engine temperature is around 60-65 degrees celsius. Long drive can reach around 80-85 degrees.
-  table.addColumn("speed"); 
-  table.addColumn("speedSmooth"); 
-  table.addColumn("angle");
-  table.addColumn("angleBasedOnDistance");
-  table.addColumn("direction"); // North,South,East,West
-  table.addColumn("directionBasedOnDistance");
-  table.addColumn("straightness");
-  float diffAngleTotal = 0;
-  float diffAngleTotalFar = 0;
-  String oldDir=""; 
-  String oldDirFar="";
-  float averageDist=0.0; 
-  float sumDist =0.0; 
-  float maxDist=0.0;
-  averageDist = 1945.8987;
-  float averageDistFar=0.0; 
-  float sumDistFar =0.0; 
-  float maxDistFar=0.0;
-  averageDistFar = 1945.8987;// might be wrong
-  int amountOverAvg = 0;
-  float averageDiffToAvg=0.0; 
-  float sumDiffToAvg=0.0;
-  float averageClean = 141.0506;
+  // Normal engine temperature is around 60-65 degrees celsius. Long drive can reach around 80-85 degrees.
+  table.addColumn("engineTemperature"); table.addColumn("speed"); table.addColumn("speedSmooth"); table.addColumn("angle");table.addColumn("angleBasedOnDistance"); table.addColumn("direction"); table.addColumn("directionBasedOnDistance");table.addColumn("straightness");
+  float diffAngleTotal = 0; float diffAngleTotalFar = 0; String oldDir="";  String oldDirFar=""; float averageDist=0.0;  float sumDist =0.0; float maxDist=0.0; averageDist = 1945.8987;float averageDistFar=0.0; float sumDistFar =0.0; float maxDistFar=0.0;averageDistFar = 1945.8987; int amountOverAvg = 0;float averageDiffToAvg=0.0; float sumDiffToAvg=0.0;float averageClean = 141.0506;
+  int numSmallDist=0; float disregardedSum=0.0;float newAverage; float sumStraightness=0; float sumStraightnessClose=0; float sumStraightnessFar=0;int countInfinite=0; float avgStrRecord = 0.0016489563; float avgStrRecordClose = 0.0016241027; float avgStrRecordFar = 3.5712388E-4;int countOvAvgStr = 0; int countOvAvgStrFar = 0; int countOvAvgStrClose = 0;int sumTimeBadlyOrdered = 0;
 
-  int numSmallDist=0; 
-  float disregardedSum=0.0;
-  float newAverage; 
+  table.addColumn("numberPassengers");table.addColumn("fuelConsumption");table.addColumn("suspensionSpringForce");table.addColumn("wiperOn");table.addColumn("gpsOn");table.addColumn("carPhoneUsed");table.addColumn("heatingSeatsOn");table.addColumn("computerElectricityConsumption");
 
-  float sumStraightness=0; 
-  float sumStraightnessClose=0; 
-  float sumStraightnessFar=0;
-  int countInfinite=0; 
-  float avgStrRecord = 0.0016489563; 
-  float avgStrRecordClose = 0.0016241027; 
-  float avgStrRecordFar = 3.5712388E-4;
-  int countOvAvgStr = 0; 
-  int countOvAvgStrFar = 0; 
-  int countOvAvgStrClose = 0;
+  table.addColumn("utmx");table.addColumn("utmy");table.addColumn("lat"); table.addColumn("lon");table.addColumn("xSmooth");table.addColumn("ySmooth");table.addColumn("utmxSmooth");table.addColumn("utmySmooth");
 
-  int sumTimeBadlyOrdered = 0;
-
-  table.addColumn("numberPassengers");
-  table.addColumn("fuelConsumption");
-  table.addColumn("suspensionSpringForce"); // suspension spring force?, in between 77.2 MPa and 79.3 MPa
-  table.addColumn("wiperOn");
-  table.addColumn("gpsOn");
-  table.addColumn("carPhoneUsed");
-
-  // We need to consider the addition of two more attributes. One WHAT_Qn and one WHAT_Ql
-  // heatingSeatsOn
-  // computerElectricityConsumption
-  table.addColumn("heatingSeatsOn");
-  table.addColumn("computerElectricityConsumption");
-
-
-  table.addColumn("utmx"); 
-  table.addColumn("utmy");
-  table.addColumn("lat"); 
-  table.addColumn("lon");  
-  table.addColumn("xSmooth"); 
-  table.addColumn("ySmooth");
-  table.addColumn("utmxSmooth"); 
-  table.addColumn("utmySmooth");
+  // -- Functions tests
+  
+  ArrayList<Float>testInterpolateArr1 =  interpolateArray(5, new ArrayList<Float>(Arrays.asList(10.0,20.0)));
+  ArrayList<Float>testInterpolateArr2 =  interpolateArray(5, new ArrayList<Float>(Arrays.asList(30.0,5.0,20.0)));
+  ArrayList<Float>testInterpolateArr3 =  interpolateArray(8, new ArrayList<Float>(Arrays.asList(-30.0,-5.0,20.0)));
+    ArrayList<Float>testInterpolateArr4 =  interpolateArray(15, new ArrayList<Float>(Arrays.asList(-30.0,-5.0,20.0)));
+  println("testInterpolateArr1: "+testInterpolateArr1+", testInterpolateArr2: "+testInterpolateArr2+", testInterpolateArr3: "+testInterpolateArr3+", testInterpolateArr4: "+testInterpolateArr4);
+    
+  ArrayList<Float> arrt42 =  interpolateArray(10,new ArrayList<Float>(Arrays.asList(30.0,5.0,20.0)));
+  ArrayList<Float> arrt43 =  interpolateArray(10,new ArrayList<Float>(Arrays.asList(-30.0,-5.0,20.0)));
+  ArrayList<Float> arrt44 =  interpolateArray(7,new ArrayList<Float>(Arrays.asList(30.0,-1.0,-1.0,-4.0,5.0,20.0)));
+  
+  HashMap<String,String> complexitiesIdsMods = getDesiredComplexities(4);
+  println("complexitiesIdsMods: "+complexitiesIdsMods);  
+  ArrayList<Integer> indexesDataMatching_qn_easy = allIndexesForDifficultyQn_Ql("dZ", "easy", jsonData);ArrayList<Integer> indexesDataMatching_qn_medium = allIndexesForDifficultyQn_Ql("dZ", "medium", jsonData);ArrayList<Integer> indexesDataMatching_qn_hard = allIndexesForDifficultyQn_Ql("dZ", "hard", jsonData);
+  ArrayList<Integer> indexesDataMatching_ql_easy = allIndexesForDifficultyQn_Ql("dQ", "easy", jsonData);ArrayList<Integer> indexesDataMatching_ql_medium = allIndexesForDifficultyQn_Ql("dQ", "medium", jsonData);ArrayList<Integer> indexesDataMatching_ql_hard = allIndexesForDifficultyQn_Ql("dQ", "hard", jsonData);
+  
+  //ArrayList<ArrayList<Integer>> test1 = AllTimeInAnIDC(table, glbl_DataComplexFinal);
+  //println("test1: "+test1);
+  //println("test1.get(0).get(0): "+test1.get(0).get(0));
+  //println("info test1.get(0).get(0): "+ glbl_DataComplexFinal.get(test1.get(0).get(0)));
+  //println("test1.get(0).size(): "+test1.get(0).size());
+  WriteFile(table, jsonData, glbl_DataComplexFinal);
+  
+  // --
+  
 
   int countRow = 0;
   int totalRowCount=0; 
@@ -145,10 +89,7 @@ void setup() {
   } else { 
     rowFive = table.getRow(maxRowsCount);
   }
-  float xPosBeg = rowZero.getFloat("x"); 
-  float yPosBeg = rowZero.getFloat("y");
-  float xPosEnd = rowFive.getFloat("x"); 
-  float yPosEnd = rowFive.getFloat("y");
+  float xPosBeg = rowZero.getFloat("x"); float yPosBeg = rowZero.getFloat("y");float xPosEnd = rowFive.getFloat("x"); float yPosEnd = rowFive.getFloat("y");
   String dBeg = rowZero.getString("t");
   OffsetDateTime odtBeg = OffsetDateTime.parse(dBeg);
   long millisBeg = odtBeg.toInstant().toEpochMilli();
@@ -204,121 +145,67 @@ void setup() {
   HashMap<Integer, Integer> numVariationsId = new HashMap<Integer, Integer>(); 
   int prevValWiper=0;
   int numRows = table.getRowCount();
+  println("numRows: "+numRows);
 
+  ArrayList<ArrayList<Integer>> allIndexes =  AllTimeInAnIDC(table, glbl_DataComplexFinal);
+  for(int i=0; i<allIndexes.size();i++){
+    //println("i: "+i+", allIndexes.get(i).size(): "+allIndexes.get(i).size() +", allIndexes: "+allIndexes.get(i));
+    int idToGetDataFor = allIndexes.get(i).get(0);
+    JSONObject curComplexities = glbl_DataComplexFinal.getJSONObject(i);
+    println("curComplexities: "+curComplexities);
+  }
 
   // --------- start of the big loop for calculations for each row
   for (TableRow row : table.rows()) {
+    
+    
+    // Looping over all the trajectories now... we have an index, and for each it defines the type of trajectory we want. MAYBE MAKES MORE SENSE TO DO IN THE JAVASCRIPT
+    
     int id = row.getInt("id");
-    if ( hMap.get(id) == null ) {
-      listIdentifiersDone.add(id); 
+    if ( hMap.get(id) == null ) { listIdentifiersDone.add(id); 
       listDates.add(OffsetDateTime.parse("2000-01-01T00:00:00Z", DateTimeFormatter.ISO_OFFSET_DATE_TIME));
       hMap.put(id, OffsetDateTime.parse("2000-01-01T00:00:00Z", DateTimeFormatter.ISO_OFFSET_DATE_TIME)); //println("test hMap right get:  "+hMap.get(id)); println("test hMap wrong get:  "+hMap.get(42));
     }
-    if (prevID != id) { 
-      countRow = 0; 
-      prevID = id;
-    }
+    if (prevID != id) { countRow = 0; prevID = id; }
 
     rowZero = table.getRow(totalRowCount);
-    if ( totalRowCount+countForEnd < maxRowsCount) { 
-      rowFive = table.getRow(totalRowCount+countForEnd);
-    } else { 
-      rowFive = table.getRow(maxRowsCount-1);
-    }
-    idBeg = rowZero.getInt("id"); 
-    idEnd = rowFive.getInt("id");
+    if ( totalRowCount+countForEnd < maxRowsCount) { rowFive = table.getRow(totalRowCount+countForEnd); } else { rowFive = table.getRow(maxRowsCount-1); }
+    idBeg = rowZero.getInt("id");  idEnd = rowFive.getInt("id");
     while ( idEnd != idBeg ) {
       countForEnd--;
-      if ( totalRowCount+countForEnd < maxRowsCount) { 
-        rowFive = table.getRow(totalRowCount+countForEnd);
-      } else { 
-        rowFive = table.getRow(maxRowsCount-1);
-      }
-      idBeg = rowZero.getInt("id"); 
-      idEnd = rowFive.getInt("id");
+      if ( totalRowCount+countForEnd < maxRowsCount) { rowFive = table.getRow(totalRowCount+countForEnd); } else { rowFive = table.getRow(maxRowsCount-1); }
+      idBeg = rowZero.getInt("id"); idEnd = rowFive.getInt("id");
     }
-    countForEnd=5;
-    xPosBeg = rowZero.getFloat("x"); 
-    yPosBeg = rowZero.getFloat("y"); 
-    xPosEnd = rowFive.getFloat("x"); 
-    yPosEnd = rowFive.getFloat("y");
+    countForEnd=5; xPosBeg = rowZero.getFloat("x"); yPosBeg = rowZero.getFloat("y"); xPosEnd = rowFive.getFloat("x"); yPosEnd = rowFive.getFloat("y");
+
+
+
     dBeg = rowZero.getString("t"); 
     odtBeg = OffsetDateTime.parse(dBeg); 
+    // println("dBeg: "+dBeg.toString()+", odtBeg: "+odtBeg.toString());
     millisBeg = odtBeg.toInstant().toEpochMilli(); 
     dEnd = rowFive.getString("t"); 
     odtEnd = OffsetDateTime.parse(dEnd); 
+
+
+    // println("time difference between dBeg: "+dBeg+", and dEnd: "+dEnd+" = "+(dBeg.compareTo(dEnd)));
+    // OffsetDateTime testDate = OffsetDateTime.parse("Fri Aug 01 2014 09:02:01 GMT+0100");
+    // ArrayList<Integer> indexesTimes =  IsTimeInAnIDC(odtBeg,id,glbl_DataComplexFinal);
+    // println("indexesTimes: "+indexesTimes.toString());
+    // if (indexesTimes.size()>0){ println("glbl_DataComplexFinal.get(indexesTimes.get(0)) : "+glbl_DataComplexFinal.get(indexesTimes.get(0)).toString());}
+
     millisEnd = odtEnd.toInstant().toEpochMilli();    
     float smoothDistMeter = distFrom(xPosBeg, yPosBeg, xPosEnd, yPosEnd); float smoothDistKmPoints = smoothDistMeter/100; float speedSmooth=smoothDistKmPoints/timeDiffZero; float speedSmoothKmH = smoothDistKmPoints/timeDiffHZero;
 
     // Should we consider variations on noise generations?!
     float noiseVal = noise((countRow)*noiseScaleE1, noiseScaleE1);
-    // float noiseValE1 = noise ( countRow*noiseScaleE1, noiseScaleE1 ); // float noiseValM1 = noise ( countRow*noiseScaleM1, noiseScaleM1 ); // float noiseValH1 = noise ( countRow*noiseScaleH1, noiseScaleH1 ); // float noiseValE2 = noise ( countRow*noiseScaleE2, noiseScaleE2 ); // float noiseValM2 = noise ( countRow*noiseScaleM2, noiseScaleM2 ); // float noiseValH2 = noise ( countRow*noiseScaleH2, noiseScaleH2 ); // float noiseValE3 = noise ( countRow*noiseScaleE3, noiseScaleE3 ); // float noiseValM3 = noise ( countRow*noiseScaleM3, noiseScaleM3 ); // float noiseValH3 = noise ( countRow*noiseScaleH3, noiseScaleH3 ); // float noiseValE4 = noise ( countRow*noiseScaleE4, noiseScaleE4 ); // float noiseValM4 = noise ( countRow*noiseScaleM4, noiseScaleM4 ); // float noiseValH4 = noise ( countRow*noiseScaleH4, noiseScaleH4 ); // float noiseValE5 = noise ( countRow*noiseScaleE5, noiseScaleE5 ); // float noiseValM5 = noise ( countRow*noiseScaleM5, noiseScaleM5 ); // float noiseValH5 = noise ( countRow*noiseScaleH5, noiseScaleH5 ); // float noiseValE6 = noise ( countRow*noiseScaleE6, noiseScaleE6 ); // float noiseValM6 = noise ( countRow*noiseScaleM6, noiseScaleM6 ); // float noiseValH6 = noise ( countRow*noiseScaleH6, noiseScaleH6 ); // float noiseValE7 = noise ( countRow*noiseScaleE7, noiseScaleE7 ); // float noiseValM7 = noise ( countRow*noiseScaleM7, noiseScaleM7 ); // float noiseValH7 = noise ( countRow*noiseScaleH7, noiseScaleH7 ); // float noiseValE8 = noise ( countRow*noiseScaleE8, noiseScaleE8 ); // float noiseValM8 = noise ( countRow*noiseScaleM8, noiseScaleM8 ); // float noiseValH8 = noise ( countRow*noiseScaleH8, noiseScaleH8 );
-    float noiseValE1 = noise ( countRow*noiseScaleE1, noiseScaleE1, noiseScaleE1 );
-    float noiseValE2 = noise ( noiseScaleE2, countRow*noiseScaleE2, noiseScaleE2 );
-    float noiseValE3 = noise ( noiseScaleE3, noiseScaleE3, countRow*noiseScaleE3 );
-    float noiseValE4 = noise ( countRow*noiseScaleE4 , countRow*noiseScaleE4, noiseScaleE4 );
-    float noiseValE5 = noise ( countRow*noiseScaleE5, noiseScaleE5, countRow*noiseScaleE5 );
-    float noiseValE6 = noise ( noiseScaleE6, countRow*noiseScaleE6, countRow*noiseScaleE6 );
-    float noiseValE7 = noise ( countRow*noiseScaleE7, countRow*noiseScaleE7, countRow*noiseScaleE7 );
-    float noiseValE8 = noise ( 2*countRow*noiseScaleE8 , noiseScaleE8, noiseScaleE8 ); // unclear on what to do with that variation
-    float noiseValM1 = noise ( countRow*noiseScaleM1, noiseScaleM1, noiseScaleM1 );
-    float noiseValM2 = noise ( noiseScaleM2, countRow*noiseScaleM2, noiseScaleM2 );
-    float noiseValM3 = noise ( noiseScaleM3, noiseScaleM3, countRow*noiseScaleM3 );
-    float noiseValM4 = noise ( countRow*noiseScaleM4, countRow*noiseScaleM4, noiseScaleM4 );
-    float noiseValM5 = noise ( countRow*noiseScaleM5, noiseScaleM5, countRow*noiseScaleM5 );
-    float noiseValM6 = noise ( noiseScaleM6, countRow*noiseScaleM6, countRow*noiseScaleM6 );
-    float noiseValM7 = noise ( countRow*noiseScaleM7, countRow*noiseScaleM7, countRow*noiseScaleM7 );
-    float noiseValM8 = noise ( 2*countRow*noiseScaleM8, noiseScaleM8, noiseScaleM8 ); // unclear on what to do with that variation
-    float noiseValH1 = noise ( countRow*noiseScaleH1, noiseScaleH1, noiseScaleH1 );
-    float noiseValH2 = noise ( noiseScaleH2, countRow*noiseScaleH2, noiseScaleH2 );
-    float noiseValH3 = noise ( noiseScaleH3, noiseScaleH3, countRow*noiseScaleH3 );
-    float noiseValH4 = noise ( countRow*noiseScaleH4, countRow*noiseScaleH4, noiseScaleH4 );
-    float noiseValH5 = noise ( countRow*noiseScaleH5, noiseScaleH5, countRow*noiseScaleH5 );
-    float noiseValH6 = noise ( noiseScaleH6, countRow*noiseScaleH6, countRow*noiseScaleH6 );
-    float noiseValH7 = noise ( countRow*noiseScaleH7, countRow*noiseScaleH7, countRow*noiseScaleH7 );
-    float noiseValH8 = noise ( 2*countRow*noiseScaleH8, noiseScaleH8, noiseScaleH8 ); // unclear on what to do with that variation
+    float noiseValE1 = noise ( countRow*noiseScaleE1, noiseScaleE1, noiseScaleE1 );float noiseValE2 = noise ( noiseScaleE2, countRow*noiseScaleE2, noiseScaleE2 );float noiseValE3 = noise ( noiseScaleE3, noiseScaleE3, countRow*noiseScaleE3 );float noiseValE4 = noise ( countRow*noiseScaleE4 , countRow*noiseScaleE4, noiseScaleE4 );float noiseValE5 = noise ( countRow*noiseScaleE5, noiseScaleE5, countRow*noiseScaleE5 );float noiseValE6 = noise ( noiseScaleE6, countRow*noiseScaleE6, countRow*noiseScaleE6 );float noiseValE7 = noise ( countRow*noiseScaleE7, countRow*noiseScaleE7, countRow*noiseScaleE7 );float noiseValE8 = noise ( 2*countRow*noiseScaleE8 , noiseScaleE8, noiseScaleE8 ); float noiseValM1 = noise ( countRow*noiseScaleM1, noiseScaleM1, noiseScaleM1 );float noiseValM2 = noise ( noiseScaleM2, countRow*noiseScaleM2, noiseScaleM2 );float noiseValM3 = noise ( noiseScaleM3, noiseScaleM3, countRow*noiseScaleM3 );float noiseValM4 = noise ( countRow*noiseScaleM4, countRow*noiseScaleM4, noiseScaleM4 );float noiseValM5 = noise ( countRow*noiseScaleM5, noiseScaleM5, countRow*noiseScaleM5 );float noiseValM6 = noise ( noiseScaleM6, countRow*noiseScaleM6, countRow*noiseScaleM6 );float noiseValM7 = noise ( countRow*noiseScaleM7, countRow*noiseScaleM7, countRow*noiseScaleM7 );float noiseValM8 = noise ( 2*countRow*noiseScaleM8, noiseScaleM8, noiseScaleM8 ); float noiseValH1 = noise ( countRow*noiseScaleH1, noiseScaleH1, noiseScaleH1 );float noiseValH2 = noise ( noiseScaleH2, countRow*noiseScaleH2, noiseScaleH2 );float noiseValH3 = noise ( noiseScaleH3, noiseScaleH3, countRow*noiseScaleH3 );float noiseValH4 = noise ( countRow*noiseScaleH4, countRow*noiseScaleH4, noiseScaleH4 );float noiseValH5 = noise ( countRow*noiseScaleH5, noiseScaleH5, countRow*noiseScaleH5 );float noiseValH6 = noise ( noiseScaleH6, countRow*noiseScaleH6, countRow*noiseScaleH6 );float noiseValH7 = noise ( countRow*noiseScaleH7, countRow*noiseScaleH7, countRow*noiseScaleH7 );float noiseValH8 = noise ( 2*countRow*noiseScaleH8, noiseScaleH8, noiseScaleH8 ); 
+    float valVariationsShared = 45;float noiseTemperature_E = 60 + noiseValE1*valVariationsShared; float noiseTemperature_M = 60 + noiseValM1*valVariationsShared;  float noiseTemperature_H = 60 + noiseValH1*valVariationsShared;float noiseSuspensionSpringForce_E = 77.2 + noiseValE2*valVariationsShared; float noiseSuspensionSpringForce_M = 77.2 + noiseValM2*valVariationsShared; float noiseSuspensionSpringForce_H = 77.2 + noiseValH2*valVariationsShared;float noiseFuelConsumption_E = 75 + noiseValE3*valVariationsShared;float noiseFuelConsumption_M = 75 + noiseValM3*valVariationsShared; float noiseFuelConsumption_H = 75 + noiseValH3*valVariationsShared; float noiseComputerElectricityConsumption_E = 55 + noiseValE7*valVariationsShared; float noiseComputerElectricityConsumption_M = 55 + noiseValM7*valVariationsShared; float noiseComputerElectricityConsumption_H = 55 + noiseValH7*valVariationsShared; 
+    float quantHeatingSeatsOn_E=noiseValE8*10; float quantHeatingSeatsOn_M=noiseValM8*10; float quantHeatingSeatsOn_H=noiseValH8*10; float quantWiper_E=noiseValE4*10; float quantWiper_M=noiseValM4*10; float quantWiper_H=noiseValH4*10; float quantGPS_E=noiseValE5*10; float quantGPS_M=noiseValM5*10; float quantGPS_H=noiseValH5*10; float quantPhone_E=noiseValE6*10; float quantPhone_M=noiseValM6*10; float quantPhone_H=noiseValH6*10;
+    // Noise 
+    float noiseValPassengers = noise(countRow*noiseScaleE1, noiseScaleE1); float noiseValGPS = noise(countRow*noiseScaleE1, noiseScaleE1, noiseScaleE1);  float noiseValWiperOn = noise(noiseScaleE2, countRow*noiseScaleE2, noiseScaleE2 );  float noiseValPhone = noise(noiseScaleE3, noiseScaleE3, 2*countRow*noiseScaleE3); float noiseValHeatingSeatsOn = noise(2*countRow*noiseScaleE4, noiseScaleE4, countRow*noiseScaleE4); int noisePassengers = (int) (noiseValPassengers*4); int noiseGPSon= (int) (noiseValGPS*2);  int noisePhone= (int) (noiseValPhone*2);  int noiseWiperOn = (int) (noiseValWiperOn*2);  int noiseHeatingSeatsOn = (int) (noiseValHeatingSeatsOn*2);
 
-    // Previous values of ranges to multiply to random values: noiseTemperature_E 30, noiseSuspensionSpringForce_E 2.1, noiseFuelConsumption_E 75 // IMPORTANT This is where we can think about values for the queries for the masks.
-    float valVariationsShared = 45;
-    float noiseTemperature_E = 60 + noiseValE1*valVariationsShared; 
-    float noiseTemperature_M = 60 + noiseValM1*valVariationsShared; 
-    float noiseTemperature_H = 60 + noiseValH1*valVariationsShared;
-    float noiseSuspensionSpringForce_E = 77.2 + noiseValE2*valVariationsShared; 
-    float noiseSuspensionSpringForce_M = 77.2 + noiseValM2*valVariationsShared; 
-    float noiseSuspensionSpringForce_H = 77.2 + noiseValH2*valVariationsShared;
-    float noiseFuelConsumption_E = 75 + noiseValE3*valVariationsShared;
-    float noiseFuelConsumption_M = 75 + noiseValM3*valVariationsShared; 
-    float noiseFuelConsumption_H = 75 + noiseValH3*valVariationsShared; // What unit are we expecting here? // miles per gallon // https://www.kbb.com/what-is/mpg/
-    float noiseComputerElectricityConsumption_E = 55 + noiseValE7*valVariationsShared; // value selected as base for computerElectricityConsumption when we don't know about it
-    float noiseComputerElectricityConsumption_M = 55 + noiseValM7*valVariationsShared; 
-    float noiseComputerElectricityConsumption_H = 55 + noiseValH7*valVariationsShared; 
 
-    // We'll generate values in between 0 and 10, and depending if over 5 we'll make it 
-    float quantHeatingSeatsOn_E=noiseValE8*10;
-    float quantHeatingSeatsOn_M=noiseValM8*10;
-    float quantHeatingSeatsOn_H=noiseValH8*10; 
-    float quantWiper_E=noiseValE4*10;
-    float quantWiper_M=noiseValM4*10;
-    float quantWiper_H=noiseValH4*10; 
-    float quantGPS_E=noiseValE5*10;
-    float quantGPS_M=noiseValM5*10;
-    float quantGPS_H=noiseValH5*10; 
-    float quantPhone_E=noiseValE6*10;
-    float quantPhone_M=noiseValM6*10;
-    float quantPhone_H=noiseValH6*10;
-    // Noise quant
-    float noiseValPassengers = noise(countRow*noiseScaleE1, noiseScaleE1); 
-    float noiseValGPS = noise(countRow*noiseScaleE1, noiseScaleE1, noiseScaleE1); 
-    float noiseValWiperOn = noise(noiseScaleE2, countRow*noiseScaleE2, noiseScaleE2 ); 
-    float noiseValPhone = noise(noiseScaleE3, noiseScaleE3, 2*countRow*noiseScaleE3);
-    float noiseValHeatingSeatsOn = noise(2*countRow*noiseScaleE4, noiseScaleE4, countRow*noiseScaleE4);
-    
-    // Noise qual
-    int noisePassengers = (int) (noiseValPassengers*4); 
-    int noiseGPSon= (int) (noiseValGPS*2); 
-    int noisePhone= (int) (noiseValPhone*2); 
-    int noiseWiperOn = (int) (noiseValWiperOn*2);    
-    int noiseHeatingSeatsOn = (int) (noiseValHeatingSeatsOn*2);
 
     float x = row.getFloat("x"); float y = row.getFloat("y"); String d = row.getString("t"); OffsetDateTime odt = OffsetDateTime.parse(d); 
     long millis = odt.toInstant().toEpochMilli();
@@ -372,12 +259,8 @@ void setup() {
 
       // Cases selection (Easy_Easy_Medium, etc.) and adaptation of the values based on that.
       int modId = id%8; 
-      float noiseFuelConsumption = noiseFuelConsumption_E; 
-      float noiseTemperature = noiseTemperature_M; 
-      float noiseSuspensionSpringForce = noiseSuspensionSpringForce_H;  // case 0
-      
+      float noiseFuelConsumption = noiseFuelConsumption_E;float noiseTemperature = noiseTemperature_M;float noiseSuspensionSpringForce = noiseSuspensionSpringForce_H;  // case 0
       float noiseComputerElectricityConsumption = noiseComputerElectricityConsumption_E;
-      
       int actualCountForEnd_GPS = countForEnd, actualCountForEnd_Phone = countForEnd, actualCountForEnd_Wiper = countForEnd, actualCountForEnd_HeatingSeatsOn = countForEnd;
       int countEnd_E = 40; int countEnd_M = 36; int countEnd_H = 32;
       int qualGPS=0; int qualPhone=0; int qualWiper=0; int qualHeatingSeatsOn=0;
@@ -389,7 +272,6 @@ void setup() {
         actualCountForEnd_Phone = countEnd_M; noiseFuelConsumption = noiseFuelConsumption_M; 
         actualCountForEnd_Wiper = countEnd_H; noiseSuspensionSpringForce = noiseSuspensionSpringForce_H;
          
-         // WHY ARE THEY ALL EASY HERE?! // Update 2021-May-12 change accordingly to name of the attribute, like we do for WHAT_Qn!!!
         if (quantGPS_E>5) { qualGPS=1; };
         if (quantPhone_M>5) { qualPhone=1; };
         if (quantWiper_H>5) { qualWiper=1;  };
@@ -569,6 +451,11 @@ void setup() {
       }
       prevValWiper = noiseWiperOn;
 
+
+      // ---- Latest addition 2021-08-05, we override previous methods in order to work with the data generated in another program for different and more diverse values
+
+      // ----
+
       // qualGPS,qualPhone,qualWiper
       row.setFloat("fuelConsumption", noiseFuelConsumption); 
       row.setFloat("engineTemperature", noiseTemperature); 
@@ -658,13 +545,9 @@ void setup() {
         float straightness = (cartesianDist(priorX, priorY, x, y) + cartesianDist(x, y, farX, farY)) / cartesianDist(priorX, priorY, farX, farY);
         float closeStraigthness = ( cartesianDist(befX, befY, x, y) + cartesianDist(x, y, nextX, nextY) ) / (  cartesianDist(befX, befY, nextX, nextY) );
         float farStraightness = ( cartesianDist(priorVX, priorVY, x, y) + cartesianDist(x, y, farVX, farVY) ) / (  cartesianDist(priorVX, priorVY, farVX, farVY) );
-
-        if ((priorX == farX && priorY == farY) || (priorVX == farVX && priorY == farY) ) { 
-          println("repetition of a point");
-        }
+        // if ((priorX == farX && priorY == farY) || (priorVX == farVX && priorY == farY) ) { println("repetition of a point"); }
 
         if ( Double.isInfinite(straightness) || Double.isInfinite(farStraightness) || Double.isInfinite(sumStraightnessClose) ) {
-
           if ( totalRowCount>0 && (priorX == farX && priorY == farY)  ) {
             TableRow altPriorRow = table.getRow(totalRowCount-4); 
             TableRow altFarRow = table.getRow(totalRowCount+4); 
@@ -678,32 +561,13 @@ void setup() {
             straightness=altStraightness;
           }
 
-          if (totalRowCount>0 && (priorVX == farVX && priorVY == farVY)  ) {
-            TableRow altVPriorRow = table.getRow(totalRowCount-9); 
-            TableRow altVFarRow = table.getRow(totalRowCount+9); 
-            float farVAltX = altVFarRow.getFloat("x"); 
-            float farVAltY = altVFarRow.getFloat("y"); 
-            float priorVAltX = altVPriorRow.getFloat("x"); 
-            float priorVAltY = altVPriorRow.getFloat("y");
-            PVector utmAltVFar = proj.invTransformCoords( new PVector(farVAltX, farVAltY) );
-            PVector utmAltVPrior =  proj.invTransformCoords( new PVector(priorVAltX, priorVAltY) );
-            float altVStraightness = (  cartesianDist(priorVAltX, priorVAltY, x, y) + cartesianDist(x, y, farVAltX, farVAltY) ) / (  cartesianDist(priorVAltX, priorVAltY, farVAltX, farVAltY) );
-            farStraightness = altVStraightness;
-          } 
+          if (totalRowCount>0 && (priorVX == farVX && priorVY == farVY)  ) { TableRow altVPriorRow = table.getRow(totalRowCount-9); TableRow altVFarRow = table.getRow(totalRowCount+9); float farVAltX = altVFarRow.getFloat("x");float farVAltY = altVFarRow.getFloat("y");float priorVAltX = altVPriorRow.getFloat("x");float priorVAltY = altVPriorRow.getFloat("y");PVector utmAltVFar = proj.invTransformCoords( new PVector(farVAltX, farVAltY) );PVector utmAltVPrior =  proj.invTransformCoords( new PVector(priorVAltX, priorVAltY) );float altVStraightness = (  cartesianDist(priorVAltX, priorVAltY, x, y) + cartesianDist(x, y, farVAltX, farVAltY) ) / (  cartesianDist(priorVAltX, priorVAltY, farVAltX, farVAltY) );farStraightness = altVStraightness;} 
           //if ( countInfinite==0 && (Double.isInfinite(sumStraightness) || Double.isInfinite(sumStraightnessFar) || Double.isInfinite(sumStraightnessClose)) ) {countInfinite++;}
-          sumStraightness+=straightness; 
-          sumStraightnessFar+=farStraightness; 
-          sumStraightnessClose+=closeStraigthness;
+          sumStraightness+=straightness; sumStraightnessFar+=farStraightness; sumStraightnessClose+=closeStraigthness;
           countInfinite++;
-          if (straightness>avgStrRecord ) { 
-            countOvAvgStr++;
-          } 
-          if (farStraightness>avgStrRecordFar ) { 
-            countOvAvgStrFar++;
-          } 
-          if (closeStraigthness>avgStrRecordClose ) { 
-            countOvAvgStrClose++;
-          }
+          if (straightness>avgStrRecord ) { countOvAvgStr++; } 
+          if (farStraightness>avgStrRecordFar ) { countOvAvgStrFar++; } 
+          if (closeStraigthness>avgStrRecordClose ) { countOvAvgStrClose++; }
         }
 
         // ---------------------------- Looping to fill the xSmooth and utmxSmooth
@@ -778,11 +642,11 @@ void setup() {
   averageDiffToAvg = sumDiffToAvg/totalRowCount;
   float numToDrop = (totalRowCount-numSmallDist);
   println("countInfinite: "+countInfinite);
-  println("averageDist: "+averageDist+", sumDist: "+sumDist+", totalRowCount: "+totalRowCount+", maxDist: "+maxDist+", amountOverAvg: "+amountOverAvg+", averageDiffToAvg: "+averageDiffToAvg);
-  println("sumStraightness: "+sumStraightness+ ", sumStraightnessFar: "+sumStraightnessFar+", sumStraightnessClose: "+sumStraightnessClose);
-  println("mean straight: "+( sumStraightness/totalRowCount )+ ", far str: "+ (sumStraightnessFar/totalRowCount) + ", close str: "+( sumStraightnessClose/totalRowCount ) );
-  println("countOvAvgStr: "+countOvAvgStr+", countOvAvgStrFar: "+countOvAvgStrFar+", countOvAvgStrClose: "+countOvAvgStrClose);
-  println("sumTimeBadlyOrdered: "+sumTimeBadlyOrdered);
+  // println("averageDist: "+averageDist+", sumDist: "+sumDist+", totalRowCount: "+totalRowCount+", maxDist: "+maxDist+", amountOverAvg: "+amountOverAvg+", averageDiffToAvg: "+averageDiffToAvg);
+  // println("sumStraightness: "+sumStraightness+ ", sumStraightnessFar: "+sumStraightnessFar+", sumStraightnessClose: "+sumStraightnessClose);
+  // println("mean straight: "+( sumStraightness/totalRowCount )+ ", far str: "+ (sumStraightnessFar/totalRowCount) + ", close str: "+( sumStraightnessClose/totalRowCount ) );
+  // println("countOvAvgStr: "+countOvAvgStr+", countOvAvgStrFar: "+countOvAvgStrFar+", countOvAvgStrClose: "+countOvAvgStrClose);
+  // println("sumTimeBadlyOrdered: "+sumTimeBadlyOrdered);
 
   //saveTable(table, "data/fairlyOK_IDALL_10Jan2014.csv"); //saveTable(table, "data/utm_IDALL_100114_speedSmooth.csv"); //saveTable(table, "data/utm_IDALL_100114_moreAttributesTest.csv");
   saveTable(table, "data/utm_IDALL_moreDates.csv");
@@ -872,4 +736,367 @@ public static ArrayList<Float> smoothPoint(ArrayList<Float> points) {
   resPoint.add(newX); 
   resPoint.add(newY);
   return resPoint;
+}
+
+
+// Returns an empty ArrayList when not finding a match
+public ArrayList<Integer> IsTimeInAnIDC(OffsetDateTime time, int id, JSONArray glbl_DataComplexFinal){
+  // println("IsTimeInAnIDC");
+  ArrayList<Integer> indexMatchingTimes = new ArrayList<Integer>();
+  // println("glbl_DataComplexFinal.size(): "+glbl_DataComplexFinal.size());
+  for (int i = 0; i < glbl_DataComplexFinal.size(); i++) {  
+      JSONObject explrObject = glbl_DataComplexFinal.getJSONObject(i);
+      Integer identifierMover = (Integer) explrObject.get("identifierMover");
+    if (id== identifierMover)
+    {
+      String strBeg = (String) explrObject.get("tBeg");
+      OffsetDateTime tBeg = OffsetDateTime.parse(strBeg);
+      OffsetDateTime tEnd =OffsetDateTime.parse((String) explrObject.get("tEnd"));
+
+      if (tBeg.compareTo(time)<0 && tEnd.compareTo(time)>0){
+        indexMatchingTimes.add(i);
+      }
+    }
+  }
+  return indexMatchingTimes;
+}
+
+
+// Returns an empty ArrayList when not finding a match
+public ArrayList<ArrayList<Integer>> AllTimeInAnIDC(Table table, JSONArray glbl_DataComplexFinal){
+  ArrayList<ArrayList<Integer>> allIndexMatchingTimes = new ArrayList<ArrayList<Integer>>();
+  // ArrayList<ArrayList<String>> pointsIdsMatching = new ArrayList<ArrayList<String>>();
+  // ArrayList<HashMap<Integer,ArrayList<String>>> indxtoPointsIds = new ArrayList<HashMap<Integer,ArrayList<String>>>();
+  
+  // HashMap<String,Integer> idcForPointMatching = new HashMap<String,Integer>();
+  // println("idcForPointMatching get test: "+idcForPointMatching.get("test")+", is null: "+ (idcForPointMatching.get("test")==null));
+  
+  Boolean firstBlockMet=false; Boolean lastBlockMet=false;
+
+  for (TableRow row : table.rows()) {
+    
+    // Looping over all the trajectories now... we have an index, and for each it defines the type of trajectory we want.
+    int id = row.getInt("id");
+    String _id = row.getString("_id");
+    String tStr = row.getString("t"); 
+    OffsetDateTime time = OffsetDateTime.parse(tStr);
+
+    // println("glbl_DataComplexFinal.size(): "+glbl_DataComplexFinal.size());
+    for (int i = 0; i < glbl_DataComplexFinal.size(); i++) {  
+      JSONObject explrObject = glbl_DataComplexFinal.getJSONObject(i);
+      Integer identifierMover = (Integer) explrObject.get("identifierMover");
+      Integer idc = (Integer) explrObject.get("idc");
+      // println("identifierMover: "+identifierMover+", idc: "+idc);
+      if (id== identifierMover)
+      {
+        OffsetDateTime tBeg = OffsetDateTime.parse((String) explrObject.get("tBeg"));
+        OffsetDateTime tEnd =OffsetDateTime.parse((String) explrObject.get("tEnd"));
+
+        if (tBeg.equals(time) && !firstBlockMet){
+            firstBlockMet=true;
+            allIndexMatchingTimes.add(new ArrayList<Integer>());
+            allIndexMatchingTimes.get(allIndexMatchingTimes.size()-1).add(i); 
+
+            // pointsIdsMatching.add(new ArrayList<String>());
+            // indxtoPointsIds.add(new HashMap<Integer,ArrayList<String>>());
+            
+            // indxtoPointsIds.get(indxtoPointsIds.size()-1).put(idc,new ArrayList<String>());
+            // println("allIndexMatchingTimes.size(): "+allIndexMatchingTimes.size()+", time: "+time+", tBeg: "+tBeg+", tEnd: "+tEnd+", firstBlockMet: "+firstBlockMet+", tBeg.compareTo(time)<0"+(tBeg.compareTo(time)<0)+", tEnd.compareTo(time)>0: "+(tEnd.compareTo(time)>0));
+        }
+        if (tEnd.equals(time)){
+          allIndexMatchingTimes.get(allIndexMatchingTimes.size()-1).add(i); 
+          firstBlockMet=false;
+          // There's more to do. We have an index for the glbl_DataComplexFinal for which each element should use an element from Jason data... But maybe we want to do that outside of the loop... outisde of this function?          
+        }
+        if (firstBlockMet){}
+        
+        if ( firstBlockMet && tBeg.compareTo(time)<0 && tEnd.compareTo(time)>0){ 
+          allIndexMatchingTimes.get(allIndexMatchingTimes.size()-1).add(i); 
+          // pointsIdsMatching.get(pointsIdsMatching.size()-1).add(_id);
+          // //indxtoPointsIds.set(pointsIdsMatching.size()-1).add(_id);
+          // indxtoPointsIds.get(indxtoPointsIds.size()-1).get(idc).add(_id);
+          
+          // idcForPointMatching.put(_id,idc);
+        }
+
+      }
+    }
+  }
+  //println("pointsIdsMatching: "+pointsIdsMatching);
+  // println("indxtoPointsIds: "+indxtoPointsIds);
+  return allIndexMatchingTimes;
+}
+
+public HashMap<String,Integer> GetHashMapPointIdToIdc(Table table, JSONArray glbl_DataComplexFinal){
+  HashMap<String,Integer> idcForPointMatching = new HashMap<String,Integer>();
+  // println("idcForPointMatching get test: "+idcForPointMatching.get("test")+", is null: "+ (idcForPointMatching.get("test")==null));
+  
+  Boolean firstBlockMet=false; Boolean lastBlockMet=false;
+
+  for (TableRow row : table.rows()) {
+    // Looping over all the trajectories now... we have an index, and for each it defines the type of trajectory we want.
+    int id = row.getInt("id");
+    String _id = row.getString("_id");
+    String tStr = row.getString("t"); 
+    OffsetDateTime time = OffsetDateTime.parse(tStr);
+
+    for (int i = 0; i < glbl_DataComplexFinal.size(); i++) {  
+      JSONObject explrObject = glbl_DataComplexFinal.getJSONObject(i);
+      Integer identifierMover = (Integer) explrObject.get("identifierMover");
+      Integer idc = (Integer) explrObject.get("idc");
+      // println("identifierMover: "+identifierMover+", idc: "+idc);
+      if (id== identifierMover)
+      {
+        OffsetDateTime tBeg = OffsetDateTime.parse((String) explrObject.get("tBeg"));
+        OffsetDateTime tEnd =OffsetDateTime.parse((String) explrObject.get("tEnd"));
+
+        if (tBeg.equals(time) && !firstBlockMet){
+            firstBlockMet=true;
+            idcForPointMatching.put(_id,idc);            
+        }
+        if (tEnd.equals(time)){
+          idcForPointMatching.put(_id,idc);          
+          firstBlockMet=false;
+        }
+        if (firstBlockMet){}
+        
+        if ( firstBlockMet && tBeg.compareTo(time)<0 && tEnd.compareTo(time)>0){           
+          idcForPointMatching.put(_id,idc);
+        }
+
+      }
+    }
+  }
+  return idcForPointMatching;
+}
+
+
+public ArrayList<Float> interpolateArray(int fitCount, ArrayList<Float> data) {
+  ArrayList<Float> newData = new ArrayList<Float>();
+  float springFactor = ((float) data.size() - 1) / ((float) fitCount - 1);
+  println("springFactor: "+springFactor);
+  newData.add(data.get(0)); // for new allocation
+  for ( int i = 1; i < fitCount - 1; i++) {
+    float tmp = i * springFactor;
+    float before = (float) Math.floor(tmp);
+    float after = (float) Math.ceil(tmp);
+    float atPoint = (float) tmp - before;
+    // newData.add ( this.linearInterpolate(data.get(before), data.get(after) , atPoint) );
+    // float[] interp = interpolate(data.get(before), data.get(after) , atPoint) ;
+    newData.add(lerp(before,after,atPoint));
+    }
+  newData.add(data.get(data.size()- 1)); // for new allocation
+  return newData;
+};
+
+
+
+public ArrayList<Float> changeJSONarrayToArrayListFloat(JSONArray jsonArray){
+  ArrayList<Float> list = new ArrayList<Float>();     
+  if (jsonArray != null) { 
+     int len = jsonArray.size();
+     for (int i=0;i<len;i++){ 
+      // list.add((float) jsonArray.get(i));
+      list.add(Float.valueOf(String.valueOf(jsonArray.get(i))));
+     }
+  } 
+  return list;
+}
+
+
+public HashMap<String,String> getDesiredComplexities(int modId){
+  HashMap<String,String>  res = new HashMap<String,String>();
+
+  // Changes for the possibility to vary with repetition of difficulties in mods. 
+  // We order the attributes in three groups [gpsOn,EngineTemperature|carPhoneUsed,fuelConsumption|wiperOn,suspensionSpringForce] 
+  if (modId == 0) {         
+    res.put("heatingSeatsOn","easy");res.put("computerElectricityConsumption","easy");
+    res.put("gpsOn","easy");res.put("engineTemperature","easy");
+    res.put("carPhoneUsed","medium");res.put("fuelConsumption","medium");
+    res.put("wiperOn","hard");res.put("suspensionSpringForce","hard");
+  } //EE // ee,mm,hh
+  else if (modId == 1) { 
+    res.put("heatingSeatsOn","easy");res.put("computerElectricityConsumption","medium");
+    res.put("gpsOn","medium");res.put("engineTemperature","medium");
+    res.put("carPhoneUsed","easy");res.put("fuelConsumption","easy");
+    res.put("wiperOn","hard");res.put("suspensionSpringForce","hard");
+  } // EM // mm,ee,hh
+  else if (modId == 2) { 
+    res.put("heatingSeatsOn","medium");res.put("computerElectricityConsumption","easy");
+    res.put("gpsOn","easy");res.put("engineTemperature","easy");
+    res.put("carPhoneUsed","hard");res.put("fuelConsumption","hard");
+    res.put("wiperOn","medium");res.put("suspensionSpringForce","medium");
+  } // ME // ee,hh,mm
+  else if (modId == 3) { 
+    res.put("heatingSeatsOn","medium");res.put("computerElectricityConsumption","medium");
+    res.put("gpsOn","hard");res.put("engineTemperature","hard");
+    res.put("carPhoneUsed","medium");res.put("fuelConsumption","medium");
+    res.put("wiperOn","easy");res.put("suspensionSpringForce","easy");
+  } // MM // hh,mm,ee
+  else if (modId == 4) { 
+    res.put("heatingSeatsOn","easy");res.put("computerElectricityConsumption","hard");
+    res.put("gpsOn","hard");res.put("engineTemperature","hard");
+    res.put("carPhoneUsed","easy");res.put("fuelConsumption","easy");
+    res.put("wiperOn","medium");res.put("suspensionSpringForce","medium");
+  } // EH // hh,ee,mm
+  else if (modId == 5) { 
+    res.put("heatingSeatsOn","hard");res.put("computerElectricityConsumption","easy");
+    res.put("gpsOn","medium");res.put("engineTemperature","medium");
+    res.put("carPhoneUsed","hard");res.put("fuelConsumption","hard");
+    res.put("wiperOn","easy");res.put("suspensionSpringForce","easy");
+  } // HE // mm,hh,ee
+  else if (modId == 6) { 
+    res.put("heatingSeatsOn","easy");res.put("computerElectricityConsumption","easy");
+    res.put("gpsOn","easy");res.put("engineTemperature","easy");
+    res.put("carPhoneUsed","medium");res.put("fuelConsumption","medium");
+    res.put("wiperOn","hard");res.put("suspensionSpringForce","hard");
+  } // MH // ee, mm, hh
+  else if (modId == 7) { 
+    res.put("heatingSeatsOn","hard");res.put("computerElectricityConsumption","medium");
+    res.put("gpsOn","medium");res.put("engineTemperature","medium");
+    res.put("carPhoneUsed","easy");res.put("fuelConsumption","easy");
+    res.put("wiperOn","hard");res.put("suspensionSpringForce","hard");
+  } // HM // mm,ee,hh
+  else if (modId == 17 || modId == 23) {
+    res.put("heatingSeatsOn","hard");res.put("computerElectricityConsumption","hard");
+    res.put("gpsOn","medium");res.put("engineTemperature","medium");
+    res.put("carPhoneUsed","hard");res.put("fuelConsumption","hard");
+    res.put("wiperOn","easy");res.put("suspensionSpringForce","easy");
+  } // HH // mm,hh,ee  
+
+  return res;
+}
+
+public ArrayList<Integer> allIndexesForDifficultyQn_Ql(String typeData, String attributeDifficulty, JSONArray jsonData){
+  ArrayList<Integer> res = new ArrayList<Integer>();
+  int numDesiredDiff;
+  if (attributeDifficulty=="easy"){numDesiredDiff=0;} else if (attributeDifficulty=="medium"){numDesiredDiff=1;}else{numDesiredDiff=2;}
+  for (int i = 0; i < jsonData.size(); i++) {  
+    JSONObject dGenerated = jsonData.getJSONObject(i);
+    // println("dGenerated: "+dGenerated);
+    int diffNumber;
+    if (typeData=="dZ"){
+      diffNumber = (Integer) dGenerated.get("dZ");
+    } else {
+      diffNumber = (Integer) dGenerated.get("dQ");
+    }
+
+    // If it matches, let's push it
+    if (diffNumber==numDesiredDiff){
+      res.add(i);
+    }
+  }
+  return res;
+}
+
+
+public JSONObject getInfoForIdc(Integer idc, JSONArray glbl_DataComplexFinal){
+  int indexObj=-1;
+  for(int i=0;i<glbl_DataComplexFinal.size();i++){
+    JSONObject explrObject = glbl_DataComplexFinal.getJSONObject(i);
+    if (idc == explrObject.getInt("idc")){
+      indexObj=i;
+    }
+  }
+  if(indexObj!= -1){
+    return glbl_DataComplexFinal.getJSONObject(indexObj);
+  } else {
+    return new JSONObject();
+  }
+}
+
+public HashMap<Integer,Integer> idcToNumToInterpolateTo (Table table, JSONArray glbl_DataComplexFinal){
+  ArrayList<ArrayList<Integer>> allIndexesMatchingTime = AllTimeInAnIDC(table, glbl_DataComplexFinal);
+  HashMap<Integer,Integer> res = new HashMap<Integer,Integer>();
+  for (int i=0; i < allIndexesMatchingTime.size(); i++){
+    JSONObject infoObj = (JSONObject) glbl_DataComplexFinal.get(allIndexesMatchingTime.get(i).get(0));
+    int numToInterpolateTo = allIndexesMatchingTime.get(i).size();
+    res.put(infoObj.getInt("idc"),numToInterpolateTo);
+  }
+  return res;
+}
+
+
+
+public void WriteFile(Table table, JSONArray jsonData, JSONArray glbl_DataComplexFinal ){
+  println("**** WriteFile");
+  ArrayList<Integer> indexesDataMatching_qn_easy = allIndexesForDifficultyQn_Ql("dZ", "easy", jsonData);ArrayList<Integer> indexesDataMatching_qn_medium = allIndexesForDifficultyQn_Ql("dZ", "medium", jsonData);ArrayList<Integer> indexesDataMatching_qn_hard = allIndexesForDifficultyQn_Ql("dZ", "hard", jsonData);
+  ArrayList<Integer> indexesDataMatching_ql_easy = allIndexesForDifficultyQn_Ql("dQ", "easy", jsonData);ArrayList<Integer> indexesDataMatching_ql_medium = allIndexesForDifficultyQn_Ql("dQ", "medium", jsonData);ArrayList<Integer> indexesDataMatching_ql_hard = allIndexesForDifficultyQn_Ql("dQ", "hard", jsonData);
+
+  ArrayList<ArrayList<Integer>> indexesDataMatching_qn = new ArrayList<ArrayList<Integer>>();indexesDataMatching_qn.add(indexesDataMatching_qn_easy);indexesDataMatching_qn.add(indexesDataMatching_qn_medium);indexesDataMatching_qn.add(indexesDataMatching_qn_hard);
+  ArrayList<ArrayList<Integer>> indexesDataMatching_ql = new ArrayList<ArrayList<Integer>>();indexesDataMatching_ql.add(indexesDataMatching_ql_easy);indexesDataMatching_ql.add(indexesDataMatching_ql_medium);indexesDataMatching_ql.add(indexesDataMatching_ql_hard);
+
+  ArrayList<ArrayList<Integer>> allIndexesMatchingTime = AllTimeInAnIDC(table, glbl_DataComplexFinal);
+
+  //  ArrayList<ArrayList<Integer>> test1 = AllTimeInAnIDC(table, glbl_DataComplexFinal);
+  //println("allIndexesMatchingTime:"+ allIndexesMatchingTime);
+  //println("allIndexesMatchingTime.get(0).get(0): "+allIndexesMatchingTime.get(0).get(0));
+  //println("glbl_DataComplexFinal.get(allIndexesMatchingTime.get(0).get(0): "+glbl_DataComplexFinal.get(allIndexesMatchingTime.get(0).get(0)));
+  ////println("info test1.get(0).get(0): "+ glbl_DataComplexFinal.get(test1.get(0).get(0)));
+  //println("allIndexesMatchingTime.get(0).size(): "+allIndexesMatchingTime.get(0).size());
+  //JSONObject infoObj = (JSONObject) glbl_DataComplexFinal.get(allIndexesMatchingTime.get(0).get(0));
+  //int numToInterpolateTo = allIndexesMatchingTime.get(0).size();
+  //HashMap<Integer,Integer> idcToNumToInterpolateTo = new HashMap<Integer,Integer>();
+  //idcToNumToInterpolateTo.put(infoObj.getInt("idc"),numToInterpolateTo);
+  //println("idcToNumToInterpolateTo: "+idcToNumToInterpolateTo);
+  
+  HashMap<Integer,Integer> idcToNumToInterpolateTo = idcToNumToInterpolateTo (table, glbl_DataComplexFinal);
+  println("idcToNumToInterpolateTo: "+idcToNumToInterpolateTo);
+  
+  HashMap<String,Integer> idxForPoint = GetHashMapPointIdToIdc(table, glbl_DataComplexFinal);
+  // println("idxForPoint: "+idxForPoint);
+
+  // The code to put te utmX and utmY columns:       
+  UTM proj = new UTM(new Ellipsoid(Ellipsoid.WGS_84), 35, 'S');    // UTM zone centred on Mediterranean
+  PVector utm;
+  // converting latlon to utm
+
+  Random random = new Random();   
+  HashMap <Integer,Boolean> idcMet = new HashMap <Integer,Boolean>();
+  ArrayList<Float> qnInterpolated;
+  ArrayList<Integer> qlInterpolated;
+
+  // Work in progress... loop first to fill the positions?
+  // loop to put the ...
+  for (TableRow row : table.rows()) {
+    int id = row.getInt("id");
+    String  _id = row.getString("_id");
+    int modId = id%8;
+    HashMap<String,String> complexitiesIdsMods = getDesiredComplexities(modId);
+
+    if (idxForPoint.containsKey(_id)){
+      int idc = idxForPoint.get(_id);
+      if (!idcMet.containsKey(idc)){
+      idcMet.put(idc,true);
+      JSONObject infoIdc = getInfoForIdc(idc,glbl_DataComplexFinal);
+      String diffQn = infoIdc.getString("Complexity_WHAT_Qn"); String diffQl = infoIdc.getString("Complexity_WHAT_Ql");
+      int indexOfIndexesMatchingQn; int indexOfIndexesMatchingQl;
+      if (diffQn=="E"){indexOfIndexesMatchingQn=0;}else if(diffQn=="M"){indexOfIndexesMatchingQn=1;} else{indexOfIndexesMatchingQn=2;}
+      if (diffQl=="E"){indexOfIndexesMatchingQl=0;}else if(diffQl=="M"){indexOfIndexesMatchingQl=1;} else{indexOfIndexesMatchingQl=2;}
+      ArrayList<Integer> thisDataMatching_qn = indexesDataMatching_qn.get(indexOfIndexesMatchingQn);
+      ArrayList<Integer> thisDataMatching_ql = indexesDataMatching_ql.get(indexOfIndexesMatchingQl);
+
+      Integer randSelecQnIndx = random.nextInt(thisDataMatching_qn.size()); Integer randSelecQlIndx = random.nextInt(thisDataMatching_ql.size());
+      
+      JSONObject objMatchQn = jsonData.getJSONObject(randSelecQnIndx); JSONObject objMatchQl = jsonData.getJSONObject(randSelecQlIndx);
+      JSONArray qnDataJSON = objMatchQn.getJSONArray("zData");
+      ArrayList<Float> qnData = changeJSONarrayToArrayListFloat(qnDataJSON);
+      println("qnData.size(): "+qnData.size());
+      int numToInterpolateTo = idcToNumToInterpolateTo.get(idc);
+      qnInterpolated = interpolateArray(numToInterpolateTo,qnData);
+      println("numToInterpolateTo: "+numToInterpolateTo+", qnInterpolated.size(): "+qnInterpolated.size());
+      
+      // ArrayList<Float> qnToInterpolate = jsonData.get(randSelecQnIndx).get("zData");
+      // ArrayList<Integer> qlToInterpolate = thisDataMatching_ql.get(randSelecQnIndx).getJsonArray("qData");
+
+      }
+
+      float x = row.getFloat("x"); float y = row.getFloat("y"); String d = row.getString("t"); OffsetDateTime odt = OffsetDateTime.parse(d); 
+      utm = proj.invTransformCoords( new PVector(y, x) );
+      row.setFloat("utmx", utm.x); 
+      row.setFloat("utmy", utm.y);   
+    }
+  }
+
+  println("****");
 }

@@ -52,13 +52,14 @@ void setup() {
   //  ArrayList<Float>testInterpolateArr4 =  interpolateArray(15, new ArrayList<Float>(Arrays.asList(-30.0,-5.0,20.0)));
   //println("testInterpolateArr1: "+testInterpolateArr1+", testInterpolateArr2: "+testInterpolateArr2+", testInterpolateArr3: "+testInterpolateArr3+", testInterpolateArr4: "+testInterpolateArr4);
     
-    ArrayList<Integer> interpolateQlTest = interpolateArrayBinary (12, new ArrayList<Integer>(Arrays.asList(0,0,1,0,0,0,0,1)));
-    println("//// interpolateQlTest: "+interpolateQlTest);
+  ArrayList<Integer> interpolateQlTest = interpolateArrayBinary (12, new ArrayList<Integer>(Arrays.asList(0,0,1,1,0,0,0,1)));
+  println("//// interpolateQlTest: "+interpolateQlTest);
 
     //ArrayList<Float> test2N_a = interpolate(4.0, 9.5, 5); ArrayList<Float> test2N_b = interpolate(-12.0, 9.5, 7);
     //println("test2N_a: "+test2N_a.toString()+", test2N_b: "+test2N_b.toString());
     
-  //ArrayList<Float> arrt42 =  interpolateArray(10,new ArrayList<Float>(Arrays.asList(30.0,5.0,20.0)));
+  ArrayList<Float> arrt42 =  interpolateArray(10,new ArrayList<Float>(Arrays.asList(-13.0,56.0,115.0,20.0)));
+  println("arrt42: "+arrt42);
   //ArrayList<Float> arrt43 =  interpolateArray(10,new ArrayList<Float>(Arrays.asList(-30.0,-5.0,20.0)));
   //ArrayList<Float> arrt43_b =  interpolateArray(10,new ArrayList<Float>(Arrays.asList(-30.0,45.0,20.0)));
   //println("arrt43_b: "+arrt43_b);
@@ -888,7 +889,7 @@ public HashMap<String,Integer> GetHashMapPointIdToIdc(Table table, JSONArray glb
 public ArrayList<Float> interpolateArray(int fitCount, ArrayList<Float> data) {
   ArrayList<Float> newData = new ArrayList<Float>();
   float springFactor = ((float) data.size() - 1) / ((float) fitCount - 1);
-  newData.add(data.get(0)); // for new allocation
+  newData.add( Math.max(0, Math.min(100, data.get(0) )) ); // for new allocation
   for ( int i = 1; i < fitCount - 1; i++) {
     float tmp = i * springFactor;
     float before = (float) Math.floor(tmp);
@@ -896,9 +897,9 @@ public ArrayList<Float> interpolateArray(int fitCount, ArrayList<Float> data) {
     float atPoint = (float) tmp - before;
     // newData.add ( this.linearInterpolate(data.get(before), data.get(after) , atPoint) );
     // float[] interp = interpolate(data.get(before), data.get(after) , atPoint) ;
-    newData.add(lerp(data.get((int)before),data.get((int)after),atPoint));
+    newData.add( Math.max(0, Math.min(100,lerp(data.get((int)before),data.get((int)after),atPoint))));
     }
-  newData.add(data.get(data.size()- 1)); // for new allocation
+  newData.add( Math.max(0, Math.min(100, data.get(data.size()- 1) )) ); // for new allocation
   return newData;
 };
 

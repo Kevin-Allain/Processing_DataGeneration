@@ -45,16 +45,27 @@ void setup() {
   table.addColumn("utmx");table.addColumn("utmy");
 
   // --+-- New functions
-  
-  ArrayList<Float>testInterpolateArr1 =  interpolateArray(5, new ArrayList<Float>(Arrays.asList(10.0,20.0)));
-  ArrayList<Float>testInterpolateArr2 =  interpolateArray(5, new ArrayList<Float>(Arrays.asList(30.0,5.0,20.0)));
-  ArrayList<Float>testInterpolateArr3 =  interpolateArray(8, new ArrayList<Float>(Arrays.asList(-30.0,-5.0,20.0)));
-    ArrayList<Float>testInterpolateArr4 =  interpolateArray(15, new ArrayList<Float>(Arrays.asList(-30.0,-5.0,20.0)));
-  println("testInterpolateArr1: "+testInterpolateArr1+", testInterpolateArr2: "+testInterpolateArr2+", testInterpolateArr3: "+testInterpolateArr3+", testInterpolateArr4: "+testInterpolateArr4);
+
+  //ArrayList<Float>testInterpolateArr1 =  interpolateArray(5, new ArrayList<Float>(Arrays.asList(10.0,20.0)));
+  //ArrayList<Float>testInterpolateArr2 =  interpolateArray(5, new ArrayList<Float>(Arrays.asList(30.0,5.0,20.0)));
+  //ArrayList<Float>testInterpolateArr3 =  interpolateArray(8, new ArrayList<Float>(Arrays.asList(-30.0,-5.0,20.0)));
+  //  ArrayList<Float>testInterpolateArr4 =  interpolateArray(15, new ArrayList<Float>(Arrays.asList(-30.0,-5.0,20.0)));
+  //println("testInterpolateArr1: "+testInterpolateArr1+", testInterpolateArr2: "+testInterpolateArr2+", testInterpolateArr3: "+testInterpolateArr3+", testInterpolateArr4: "+testInterpolateArr4);
     
-  ArrayList<Float> arrt42 =  interpolateArray(10,new ArrayList<Float>(Arrays.asList(30.0,5.0,20.0)));
-  ArrayList<Float> arrt43 =  interpolateArray(10,new ArrayList<Float>(Arrays.asList(-30.0,-5.0,20.0)));
-  ArrayList<Float> arrt44 =  interpolateArray(7,new ArrayList<Float>(Arrays.asList(30.0,-1.0,-1.0,-4.0,5.0,20.0)));
+    ArrayList<Integer> interpolateQlTest = interpolateArrayBinary (12, new ArrayList<Integer>(Arrays.asList(0,0,1,0,0,0,0,1)));
+    println("//// interpolateQlTest: "+interpolateQlTest);
+
+    //ArrayList<Float> test2N_a = interpolate(4.0, 9.5, 5); ArrayList<Float> test2N_b = interpolate(-12.0, 9.5, 7);
+    //println("test2N_a: "+test2N_a.toString()+", test2N_b: "+test2N_b.toString());
+    
+  //ArrayList<Float> arrt42 =  interpolateArray(10,new ArrayList<Float>(Arrays.asList(30.0,5.0,20.0)));
+  //ArrayList<Float> arrt43 =  interpolateArray(10,new ArrayList<Float>(Arrays.asList(-30.0,-5.0,20.0)));
+  //ArrayList<Float> arrt43_b =  interpolateArray(10,new ArrayList<Float>(Arrays.asList(-30.0,45.0,20.0)));
+  //println("arrt43_b: "+arrt43_b);
+  //ArrayList<Float> arrt44 =  interpolateArray(20,new ArrayList<Float>(Arrays.asList(30.0,-1.0,-1.0,-4.0,5.0,20.0)));
+  //println("arrt44: "+arrt44);
+  //ArrayList<Float> arrt45 =  interpolateArray(3,new ArrayList<Float>(Arrays.asList(30.0,-1.0,-1.0,-4.0,5.0,20.0)));
+  //println("arrt45: "+arrt45);  
   
   HashMap<String,String> complexitiesIdsMods = getDesiredComplexities(4);
   println("complexitiesIdsMods: "+complexitiesIdsMods);  
@@ -885,13 +896,36 @@ public ArrayList<Float> interpolateArray(int fitCount, ArrayList<Float> data) {
     float atPoint = (float) tmp - before;
     // newData.add ( this.linearInterpolate(data.get(before), data.get(after) , atPoint) );
     // float[] interp = interpolate(data.get(before), data.get(after) , atPoint) ;
-    newData.add(lerp(before,after,atPoint));
+    newData.add(lerp(data.get((int)before),data.get((int)after),atPoint));
     }
   newData.add(data.get(data.size()- 1)); // for new allocation
   return newData;
 };
 
+/***
+ * Interpolating method
+ * @param start start of the interval
+ * @param end end of the interval
+ * @param count count of output interpolated numbers
+ * @return array of interpolated number with specified count
+ */
+public static ArrayList<Float> interpolate(Float start, Float end, int count) {
+    if (count < 2) {
+        throw new IllegalArgumentException("interpolate: illegal count!");
+    }
+    Float[] array = new Float[count + 1];
+    for (int i = 0; i <= count; ++ i) {
+        Float calc = start + i * (end - start) / count;
+        array[i] = calc;
+    }
+    ArrayList<Float> res = new ArrayList<Float>(Arrays.asList(array));
+    return res;
+}
+
+
+
 public ArrayList<Integer> interpolateArrayBinary (int fitCount, ArrayList<Integer> data) {
+  println("data: "+data);
   ArrayList<Integer> newData = new ArrayList<Integer>();
   float springFactor = ((float) data.size() - 1) / ((float) fitCount - 1);
   newData.add(data.get(0)); // for new allocation
@@ -900,12 +934,14 @@ public ArrayList<Integer> interpolateArrayBinary (int fitCount, ArrayList<Intege
     float before = (float) Math.floor(tmp);
     float after = (float) Math.ceil(tmp);
     float atPoint = (float) tmp - before;
+    println("tmp: "+tmp+", before: "+before+", after: "+after+", atPoint: "+atPoint);
     // newData.add ( this.linearInterpolate(data.get(before), data.get(after) , atPoint) );
     // float[] interp = interpolate(data.get(before), data.get(after) , atPoint) ;
-    newData.add( (Integer)Math.round(lerp(before,after,atPoint)));
+    newData.add( Math.round( lerp(data.get((int)before),data.get((int)after),atPoint)) );
     }
   newData.add(data.get(data.size()- 1)); // for new allocation
   return newData;
+
 };
 
 public ArrayList<Float> changeJSONarrayToArrayListFloat(JSONArray jsonArray){

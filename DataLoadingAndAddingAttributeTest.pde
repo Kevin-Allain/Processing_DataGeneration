@@ -32,7 +32,9 @@ PVector utm = null;PVector utmNext=null;PVector utmBef=null;PVector utmFar=null;
 
 void setup() {
   // jsonData = loadJSONArray("kaLineData.210717-1930_10.json");
-  jsonData = loadJSONArray("kaLineData.210725-1836_31.json");
+  //jsonData = loadJSONArray("kaLineData.210725-1836_31.json");
+  jsonData=loadJSONArray("alterEdgesData.json");
+  // jsonData = loadJSONArray("kaLineData.210725-1836_31_original.json");
   glbl_DataComplexFinal = loadJSONArray("glbl_DataComplexFinal.json");
 
   //table = loadTable("C:/Users/kevin/Documents/VAST challenges datasets/VASTChallenge2014/eclipse/vast2014/src/data/jwoData/gps.csv", "header");
@@ -58,7 +60,7 @@ void setup() {
     //ArrayList<Float> test2N_a = interpolate(4.0, 9.5, 5); ArrayList<Float> test2N_b = interpolate(-12.0, 9.5, 7);
     //println("test2N_a: "+test2N_a.toString()+", test2N_b: "+test2N_b.toString());
     
-  ArrayList<Float> arrt42 =  interpolateArray(10,new ArrayList<Float>(Arrays.asList(-13.0,56.0,115.0,20.0)));
+  ArrayList<Float> arrt42 =  interpolateArray(10,new ArrayList<Float>(Arrays.asList(-13.0,56.0,1000050.0,20.0)));
   println("arrt42: "+arrt42);
   //ArrayList<Float> arrt43 =  interpolateArray(10,new ArrayList<Float>(Arrays.asList(-30.0,-5.0,20.0)));
   //ArrayList<Float> arrt43_b =  interpolateArray(10,new ArrayList<Float>(Arrays.asList(-30.0,45.0,20.0)));
@@ -897,7 +899,7 @@ public ArrayList<Float> interpolateArray(int fitCount, ArrayList<Float> data) {
     float atPoint = (float) tmp - before;
     // newData.add ( this.linearInterpolate(data.get(before), data.get(after) , atPoint) );
     // float[] interp = interpolate(data.get(before), data.get(after) , atPoint) ;
-    newData.add( Math.max(0, Math.min(100,lerp(data.get((int)before),data.get((int)after),atPoint))));
+    newData.add( Math.max(0, Math.min(100,lerp( Math.max(0, Math.min(100, data.get((int)before) )) , Math.max(0, Math.min(100, data.get((int)after) )),atPoint))));
     }
   newData.add( Math.max(0, Math.min(100, data.get(data.size()- 1) )) ); // for new allocation
   return newData;
@@ -935,7 +937,7 @@ public ArrayList<Integer> interpolateArrayBinary (int fitCount, ArrayList<Intege
     float before = (float) Math.floor(tmp);
     float after = (float) Math.ceil(tmp);
     float atPoint = (float) tmp - before;
-    println("tmp: "+tmp+", before: "+before+", after: "+after+", atPoint: "+atPoint);
+    // println("tmp: "+tmp+", before: "+before+", after: "+after+", atPoint: "+atPoint);
     // newData.add ( this.linearInterpolate(data.get(before), data.get(after) , atPoint) );
     // float[] interp = interpolate(data.get(before), data.get(after) , atPoint) ;
     newData.add( Math.round( lerp(data.get((int)before),data.get((int)after),atPoint)) );
@@ -1036,8 +1038,24 @@ public HashMap<String,String> getDesiredComplexities(int modId){
 
 public ArrayList<Integer> allIndexesForDifficultyQn_Ql(String typeData, String attributeDifficulty, JSONArray jsonData){
   ArrayList<Integer> res = new ArrayList<Integer>();
-  int numDesiredDiff;
-  if (attributeDifficulty=="easy"){numDesiredDiff=0;} else if (attributeDifficulty=="medium"){numDesiredDiff=1;}else{numDesiredDiff=2;}
+  ArrayList<Integer> numDesiredDiff=new ArrayList<Integer>();
+  if (attributeDifficulty=="easy"){
+    //numDesiredDiff.add(0); numDesiredDiff.add(1); numDesiredDiff.add(2);
+    numDesiredDiff.add(0);
+  } 
+  else if (attributeDifficulty=="medium")
+    {
+      //numDesiredDiff.add(3); numDesiredDiff.add(4); numDesiredDiff.add(5);
+      numDesiredDiff.add(1);
+    }
+  else
+    {
+      //numDesiredDiff.add(6); numDesiredDiff.add(7); numDesiredDiff.add(8);
+      numDesiredDiff.add(2);
+    }
+  
+  // println("numDesiredDiff: "+numDesiredDiff); // ok
+  
   for (int i = 0; i < jsonData.size(); i++) {  
     JSONObject dGenerated = jsonData.getJSONObject(i);
     // println("dGenerated: "+dGenerated);
@@ -1049,12 +1067,13 @@ public ArrayList<Integer> allIndexesForDifficultyQn_Ql(String typeData, String a
     }
 
     // If it matches, let's push it
-    if (diffNumber==numDesiredDiff){
+    if (numDesiredDiff.contains(diffNumber)){
       res.add(i);
     }
   }
   return res;
 }
+
 
 
 public JSONObject getInfoForIdc(Integer idc, JSONArray glbl_DataComplexFinal){
@@ -1096,8 +1115,10 @@ public void WriteFile(Table table, Table table2, JSONArray jsonData, JSONArray g
   ArrayList<Integer> indexesDataMatching_qn_easy = allIndexesForDifficultyQn_Ql("dZ", "easy", jsonData);ArrayList<Integer> indexesDataMatching_qn_medium = allIndexesForDifficultyQn_Ql("dZ", "medium", jsonData);ArrayList<Integer> indexesDataMatching_qn_hard = allIndexesForDifficultyQn_Ql("dZ", "hard", jsonData);
   ArrayList<Integer> indexesDataMatching_ql_easy = allIndexesForDifficultyQn_Ql("dQ", "easy", jsonData);ArrayList<Integer> indexesDataMatching_ql_medium = allIndexesForDifficultyQn_Ql("dQ", "medium", jsonData);ArrayList<Integer> indexesDataMatching_ql_hard = allIndexesForDifficultyQn_Ql("dQ", "hard", jsonData);
 
-  ArrayList<ArrayList<Integer>> indexesDataMatching_qn = new ArrayList<ArrayList<Integer>>();indexesDataMatching_qn.add(indexesDataMatching_qn_easy);indexesDataMatching_qn.add(indexesDataMatching_qn_medium);indexesDataMatching_qn.add(indexesDataMatching_qn_hard);
-  ArrayList<ArrayList<Integer>> indexesDataMatching_ql = new ArrayList<ArrayList<Integer>>();indexesDataMatching_ql.add(indexesDataMatching_ql_easy);indexesDataMatching_ql.add(indexesDataMatching_ql_medium);indexesDataMatching_ql.add(indexesDataMatching_ql_hard);
+  ArrayList<ArrayList<Integer>> indexesDataMatching_qn = new ArrayList<ArrayList<Integer>>();
+  indexesDataMatching_qn.add(indexesDataMatching_qn_easy);indexesDataMatching_qn.add(indexesDataMatching_qn_medium);indexesDataMatching_qn.add(indexesDataMatching_qn_hard);
+  ArrayList<ArrayList<Integer>> indexesDataMatching_ql = new ArrayList<ArrayList<Integer>>();
+  indexesDataMatching_ql.add(indexesDataMatching_ql_easy);indexesDataMatching_ql.add(indexesDataMatching_ql_medium);indexesDataMatching_ql.add(indexesDataMatching_ql_hard);
   ArrayList<ArrayList<Integer>> allIndexesMatchingTime = AllTimeInAnIDC(table, glbl_DataComplexFinal);  
   
   HashMap<Integer,Integer> idcToNumToInterpolateTo = idcToNumToInterpolateTo (table, glbl_DataComplexFinal);
@@ -1143,16 +1164,35 @@ public void WriteFile(Table table, Table table2, JSONArray jsonData, JSONArray g
         println("desiredComplex: "+desiredComplex);
         HashMap<String,Integer> indForEachAttribute= new HashMap<String,Integer>();
         Iterator keySetIterator = desiredComplex.keySet().iterator();
+        
+        // TODO ADAPT FOR MORE INDEXES OF DIFFICULTY... OR MODIFY JASON'S OUTPUT?!
+        println("desiredComplex: "+desiredComplex);
         while (keySetIterator.hasNext()){
-          String key = (String) keySetIterator.next();          
-          if(desiredComplex.get(key)=="easy"){indForEachAttribute.put(key,0);} else if(desiredComplex.get(key)=="medium"){indForEachAttribute.put(key,1);} else {indForEachAttribute.put(key,2);} ;
+          String key = (String) keySetIterator.next();         
+          if(desiredComplex.get(key)=="easy")
+          {
+            println("desiredComplex.get(key) is easy");
+            indForEachAttribute.put(key,0);
+          } else if(desiredComplex.get(key)=="medium")
+          {
+            println("desiredComplex.get(key) is medium");
+            indForEachAttribute.put(key,1);
+          } else 
+          {
+            println("desiredComplex.get(key) is hard");
+            indForEachAttribute.put(key,2);
+          };
+
+          // println("indexesDataMatching_qn: "+indexesDataMatching_qn);
 
           if(key=="engineTemperature" || key=="fuelConsumption"||key=="suspensionSpringForce"||key=="computerElectricityConsumption"){
-            println("key: "+key);
+            println("key: "+key+", indForEachAttribute: "+indForEachAttribute);
             ArrayList<Integer> thisDataMatching_qn = indexesDataMatching_qn.get(indForEachAttribute.get(key));
+            println("thisDataMatching_qn: "+thisDataMatching_qn);
             Integer randSelecQnIndx = random.nextInt(thisDataMatching_qn.size());
             JSONObject objMatchQn = jsonData.getJSONObject(randSelecQnIndx);
             JSONArray qnDataJSON = objMatchQn.getJSONArray("zData");
+            println("qnDataJSON: "+qnDataJSON);
             ArrayList<Float> qnData = changeJSONarrayToArrayListFloat(qnDataJSON);
             println("qnData.size(): "+qnData.size());
             int numToInterpolateTo = idcToNumToInterpolateTo.get(idc);
@@ -1170,11 +1210,10 @@ public void WriteFile(Table table, Table table2, JSONArray jsonData, JSONArray g
             ArrayList<Integer> qlData = changeJSONarrayToArrayListInteger(qlDataJSON);
             println("qlData.size(): "+qlData.size());
             int numToInterpolateTo = idcToNumToInterpolateTo.get(idc);
-          
+
             qlInterpolated.add(interpolateArrayBinary(numToInterpolateTo,qlData));
             println("numToInterpolateTo: "+numToInterpolateTo+", qlInterpolated.get(0).size(): "+qlInterpolated.get(0).size()); 
-            indexQlInterpolated=0;            
-
+            indexQlInterpolated=0;
           }
           // ArrayList<Float> qnToInterpolate = jsonData.get(randSelecQnIndx).get("zData");
           // ArrayList<Integer> qlToInterpolate = thisDataMatching_ql.get(randSelecQnIndx).getJsonArray("qData");        
@@ -1188,11 +1227,8 @@ public void WriteFile(Table table, Table table2, JSONArray jsonData, JSONArray g
         if (qlInterpolated.size()>0){
           println("qlInterpolated.size() :"+qlInterpolated.size()+", qlInterpolated.get(0).size(): "+qlInterpolated.get(0).size());
         }
-
       }
       
-      // todo: fill - the key exists already... what do we want to do now?
-      // {heatingSeatsOn=hard, suspensionSpringForce=easy, wiperOn=easy, computerElectricityConsumption=easy, engineTemperature=medium, gpsOn=medium, carPhoneUsed=hard, fuelConsumption=hard}
       ArrayList<Integer> v_heatingSeatsOn = qlInterpolated.get(0), v_wiperOn = qlInterpolated.get(1),v_gpsOn = qlInterpolated.get(2), v_carPhoneUsed = qlInterpolated.get(3);
       ArrayList<Float> v_suspensionSpringForce = qnInterpolated.get(0), v_computerElectricityConsumption = qnInterpolated.get(1), v_engineTemperature = qnInterpolated.get(2), v_fuelConsumption = qnInterpolated.get(3) ;
 
@@ -1208,6 +1244,6 @@ public void WriteFile(Table table, Table table2, JSONArray jsonData, JSONArray g
     }
   }
 
-  saveTable(table, "data/data_v3.csv");
+  saveTable(table, "data/data_v5.csv");
   println("****");
 }
